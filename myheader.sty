@@ -1,0 +1,63 @@
+\usepackage[pass,letterpaper]{geometry}
+
+\usepackage[utf8]{inputenx}
+\input{ix-utf8enc.dfu}
+\usepackage[T1]{fontenc}
+\usepackage{%
+  amssymb,
+  mathtools,
+  babel,
+  txfonts,
+  balance,
+  booktabs,
+  relsize,
+  csquotes
+}
+\usepackage[shortcuts]{extdash}
+\usepackage[activate,final]{microtype}[2011/08/18]
+\microtypesetup{protrusion,stretch=9,shrink=15,step=3,letterspace=25,tracking=smallcaps}
+
+% hack
+\let\bibfont\relax
+\usepackage[backend=biber,natbib=true,style=numeric]{biblatex}
+\setcounter{biburllcpenalty}{7000}
+\setcounter{biburlucpenalty}{8000}
+\ExecuteBibliographyOptions{
+  giveninits=true,
+  % doi=true,
+  doi=false,
+  url=false,%
+  isbn=false,
+  maxnames=20,%
+}
+\renewcommand*\bibsetup{\softraggedright}
+
+\usepackage[hyperfirst=false,acronym,shortcuts]{glossaries}
+\glsunsetall[main]
+\GlsDeclareNoHyperList{acronym}
+\setacronymstyle{long-sc-short}
+\renewcommand\acronymfont[1]{{\larger\textsc{#1}}}%
+\renewcommand*\acrpluralsuffix{{\smaller\glsupacrpluralsuffix}}
+
+
+\usepackage[binary-units,detect-mode=true]{siunitx}
+\sisetup{detect-all,separate-uncertainty=true}
+
+\usepackage[%
+  final,plainpages=false,unicode,pdfencoding=auto,
+  % pdfpagelabels=false,
+  % hidelinks, %
+]{hyperref}
+
+ \urlstyle{sf}
+\nocaptionrule
+\frenchspacing
+% \setkeys{Gin}{draft=false} % Show images in draft mode
+% \graphicspath{ {graphics/} }
+\AtBeginDocument{\def\subsectionautorefname{section}}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "cop2016-sidewayscomp"
+%%% End:
