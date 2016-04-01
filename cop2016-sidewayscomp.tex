@@ -37,7 +37,21 @@
 \maketitle
 
 \begin{abstract}
-This is the text of the abstract.
+  \begin{itemize}
+  \item Sideways composition is a valuable means of abstraction.
+  \item COP notably applies SC for good modularity.
+  \item Most COP implementations have a substantial performance overhead.
+  \item This is because weaving and execution of layered methods violate common
+    assumptions about lookup.
+  \item Meta-tracing JITs have unique characteristics that can alleviate the
+    performance overhead.
+  \item They don't need to make as strong assumptions as traditional execution
+    environments have to.
+  \item We postulate that MT-JITs are good at optimizing sideways composition
+    and give initial results.
+  \item We show that hints for the JIT compiler in the COP implementation can
+    improve performance further.
+  \end{itemize}
 \end{abstract}
 
 \category{CR-number}{subcategory}{third-level}
