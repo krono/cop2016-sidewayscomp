@@ -27,6 +27,9 @@
 \authorinfo{Tobias Pape}
            {Hasso Plattner Institute\\ University of Potsdam, Germany}
            {tobias.pape@hpi.uni-potsdam.de}
+\authorinfo{Tim Felgentreff}
+           {Hasso Plattner Institute\\ University of Potsdam, Germany}
+           {tim.felgentreff@hpi.uni-potsdam.de}
 % \authorinfo{Carl Friedrich Bolz}
 %            {King's College, London}
 %            {cfbolz@gmx.de}
@@ -75,6 +78,102 @@ keyword1, keyword2
 \section{<<Impl: ContextPy, VM interface, applevel promote>>}
 \section{<<Eval: Benchmarks>>}
 
+
+\def\idBox#1#2{%
+\setlength{\fboxsep}{1pt}%
+\colorbox[HTML]{#1}{\textcolor[gray]{0.9}{\rule[0.1pt]{0pt}{5pt}#2}}%
+\xspace}
+
+
+
+We evaluate... hypotheses..., as described in the introduction:
+\begin{enumerate}
+\item Sideways composition \emph{still} has a considerable impact on execution
+  time. <<still<-> copsurvey>>
+\item Tracing JITs can alleviate the performance impact of sideways composition.
+\item <<applevel promote>>.
+\end{enumerate}
+
+
+
+We tested the first hypothesis by ....
+
+We tested the second hypothesis by ....
+
+We tested the third hypothesis by ....
+
+% PYCKET-COPY - DO NOT USE VERBATIM
+% Our evaluation compares \pycket with multiple configurations and systems on
+% a variety of programs. We present the most important results and include full
+% results in supplemental material.
+
+\subsection{Setup}
+\label{sec:setup}
+
+
+\paragraph{System} We conducted the experiments on %
+% MacBook Pro Tobi
+an Intel Core i7-4850HQ at \SI{2.3}{\GHz} with \SI{6}{\mega\byte} cache and
+\SI{16}{\giga\byte} of RAM. The machine ran Mac OS\,X 10.9.5.
+%%%% Surface Tim??
+%
+%%%% Maxinchen
+% an Intel Xeon E5-2650 (Sandy Bridge)  at \SI{2.8}{\GHz} with
+% \SI{20}{\mega\byte} cache and \SI{16}{\giga\byte} of RAM. 
+% Although virtualized on Xen, the machine was idle.
+% The machine ran Ubuntu 14.04.1 LTS with a \SI{64}{\bit} Linux 3.2.0.
+RPython as of revision
+648874ef8243
+ was used for <<pypypromote>>.
+
+All benchmarks are single-threaded.
+
+
+\paragraph{Implementations} %
+~\idBox{377EB8}{\(\circ\)}, %
+~\idBox{4DAF4A}{\(\bigtriangleup\)}, %
+~\idBox{984EA3}{\(\square\)}, %
+~\idBox{FF7F00}{\(+\)}, %
+~\idBox{FF7F00}{\(\boxtimes\)}, %
+~\idBox{E41A1C}{\(\)}, %
+
+<<maltebench>>
+\begin{itemize}
+\item ContextJS with Chrome 50.0.2661.66 beta (64-bit) on OS\,X
+\item << ContextJS Win10 Edge -- tim? >>
+\item <<ContextJS Win10 Chrome -- tim?>>
+\item <<(ContextJS Win10 Firefox -- tim?)>>
+\item ContextPy with Python 2.7.5 on OS\,X
+\item ContextPy with PyPy 5.0.1 on OS\,X
+\item ContextPy with PyPyPromote (5.1.0-alpha0 648874ef8243) on OS\,X
+\end{itemize}
+
+<<DeltaBlue/Violet/Red>>
+\begin{itemize}
+\item ContextPy with Python 2.7.5 on OS\,X
+\item ContextPy with PyPy 5.0.1 on OS\,X
+\item ContextPy with PyPyPromote (5.1.0-alpha0 648874ef8243) on OS\,X
+\end{itemize}
+
+\paragraph{Methodology} Every benchmark was run 10 times
+uninterrupted at highest
+priority in a new process. The execution time was measured
+\emph{in-system} and, hence, does not include start-up; however, warm-up was
+not separated, so all times include JIT compilation. We
+show the arithmetic mean of all  runs along with
+bootstrapped~\cite{davison+:1997:confidence-intervals} confidence intervals
+for a \SI{95}{\percent} confidence level.
+
+%\footnote{Raw figures can be  found as an appendix (\autoref{tab:all})}
+
+\paragraph{Availability}  All of our benchmarks and infrastructure
+ are available at <<TBD>>.
+
+
+\subsection{Benchmarks}
+
+
+\subsection{Threats to Validity}
 
 
 \section{Related Work}
