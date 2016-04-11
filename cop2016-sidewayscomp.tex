@@ -139,17 +139,6 @@ All benchmarks are single-threaded.
 ~\idBox{FF7F00}{\(\boxtimes\)}, %
 ~\idBox{E41A1C}{\(\)}, %
 
-<<maltebench>>
-\begin{itemize}
-\item ContextJS with Chrome 50.0.2661.66 beta (64-bit) on OS\,X
-\item << ContextJS Win10 Edge -- tim? >>
-\item <<ContextJS Win10 Chrome -- tim?>>
-\item <<(ContextJS Win10 Firefox -- tim?)>>
-\item ContextPy with Python 2.7.5 on OS\,X
-\item ContextPy with PyPy 5.0.1 on OS\,X
-\item ContextPy with PyPyPromote (5.1.0-alpha0 648874ef8243) on OS\,X
-\end{itemize}
-
 <<DeltaBlue/Violet/Red>>
 \begin{itemize}
 \item ContextPy with Python 2.7.5 on OS\,X
@@ -157,12 +146,29 @@ All benchmarks are single-threaded.
 \item ContextPy with PyPyPromote (5.1.0-alpha0 648874ef8243) on OS\,X
 \end{itemize}
 
-\paragraph{Methodology} Every benchmark was run 10 times
-uninterrupted at highest
-priority in a new process. The execution time was measured
-\emph{in-system} and, hence, does not include start-up; however, warm-up was
-not separated, so all times include JIT compilation. We
-show the arithmetic mean of all  runs along with
+and additionally for <<maltebench>>
+\begin{itemize}
+\item ContextJS with Chrome 50.0.2661.66 beta (64-bit) on OS\,X
+\item << ContextJS Win10 Edge -- tim? >>
+\item <<ContextJS Win10 Chrome -- tim?>>
+\item <<(ContextJS Win10 Firefox -- tim?)>>
+\end{itemize}
+
+\paragraph{Methodology} 
+% INITSIZE = 200000
+% MAXSIZE = 1000000000
+% TARGETTIME = 5.0 * 1000
+For <<maltebench>>, every benchmark was with increasing size until a
+measurement took at least 5 seconds; this matches the original
+methodology~\cite{appeltauer+:2009:comparison-context-oriented}.Warm-up is
+provided by the not measured runs.
+% ITER_DEFAULT=${ITER:-5}
+% SIZE_DEFAULT=${SITE:-20000}
+% WARM_DEFAULT=${WARM:-2}
+For <<DeltaBlue>>, every benchmark was run 5 times uninterrupted at highest
+priority in a new process with additional 2 times prior to measurement.
+The execution time was always measured \emph{in-system} and, hence, does not include start-up.
+We show the arithmetic mean of all  runs along with
 bootstrapped~\cite{davison+:1997:confidence-intervals} confidence intervals
 for a \SI{95}{\percent} confidence level.
 
@@ -177,6 +183,7 @@ for a \SI{95}{\percent} confidence level.
 
 \subsection{Threats to Validity}
 
+OSX: SpeedStep cannot be disabled.
 
 \section{Related Work}
 
