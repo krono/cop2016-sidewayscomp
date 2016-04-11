@@ -7,7 +7,8 @@ figure.height <- 2.3
 # figure.height <- 1.4
 
 blacklist <- c()
-# reference.vm <- 'Python'
+group.by <- c("vm","benchmark")
+reference <- ''
 
 input.basename <- 'CopSurvey'
 
@@ -41,39 +42,35 @@ bench <- data.frame()
 for (tsv in tsv_names) {
   desc <- unlist(strsplit(first(unlist(strsplit(tsv, '.', fixed=TRUE))), '-'))
   category <- desc[[1]]
-  implementation <- desc[[2]]
+  #   implementation <- desc[[2]]
   os <- desc[[3]]
   vm <- desc[[4]]
   vm_bench <- read.delim(tsv, comment.char = "#", header=TRUE, stringsAsFactors=FALSE,
-                        col.names=c('name', 'ops', 'time', 'ops/time'))
-  print("XX")
-  print(vm_bench$name)
-  subdesc <- unlist(strsplit(vm_bench$name, ':'))
-  implementation <- subdesc[[1]]
-  benchmark <- 
-  print("YY")
-  vm_bench$vm <- vm
-#   vm_bench$category <- category
-  vm_bench$criterion <- implementation
-#   vm_bench
+                        col.names=c('name', 'ops', 'time', 'value'))
+  vm_bench <- vm_bench[!grepl('^Wrapper', vm_bench$name),,drop=TRUE]
+  vm_bench$name <- sapply(vm_bench$name, function(x) {sedit(x, 'Method:', 'Method')})
+  vm_bench$name <- sapply(vm_bench$name, function(x) {sedit(x, '_', ':')})
+  vm_bench$os <- os
+  
+  #   vm_bench$category <- category                    
+  sub_bench <- read.table(sep=":",text=as.character(vm_bench$name), col.names=c('impl', 'benchmark', 'variable_values'))
+  vm_bench$vm <- paste(sub_bench$impl, capitalize(vm))
+  vm_bench <- cbind(vm_bench, sub_bench[c('benchmark','variable_values')])  
   bench <- rbind(bench, vm_bench)}
 
+bench <- bench[c('os','vm','benchmark','variable_values','ops', 'time', 'value')]
+
 # bench <- droplevels(bench[bench$criterion != 'gc',,])
-bench$vm <- factor(bench$vm, levels = sapply(sapply(tsv_names, first), capitalize))  
-bench$benchmark <- factor(bench$benchmark, levels = c('DeltaBlue','DeltaViolet','DeltaRed')) 
+bench$benchmark <- factor(bench$benchmark, levels = c('ActivateLayer','ActivateLayerFlat','MethodStandard', 'MethodNoLayer','MethodWithLayer')) 
 
 # --- shaping data
 
-bench <- droplevels(bench[!(bench$benchmark %in% blacklist),,])
-# bench <- bench[c('criterion','vm','benchmark','value', 'variable_values')]
-bench <- bench[c('vm','benchmark','value')]
-
-num.vms <- length(levels(factor(bench$vm)))
+# num.vms <- length(levels(factor(bench$vm)))
+num.vms <- length(levels(factor(paste(bench$os, bench$vm))))
 num.runs <- length(bench$benchmark)
 num.benches <- length(levels(bench$benchmark))
-# num.vars <- length(levels(factor(bench$variable_values)))
+num.vars <- length(levels(factor(bench$variable_values)))
 # num.crit <- length(levels(bench$criterion))
-num.vars <- 1
 num.crit <- 1
 
 if (num.vars == 0) {
@@ -86,13 +83,9 @@ bench <- fill.missing(bench)
 
 ######################################################
 
-# bench.tot <- droplevels(bench[bench$criterion == 'total',,drop=TRUE])
-# bench.cpu <- droplevels(bench[bench$criterion == "cpu",,drop=TRUE])
-bench.tot <- bench
+stop('Bis hier her.')
 
-group.by <- c("vm","benchmark")
-
-bench.summary <- summarize.bench(bench.tot, rigorous, FALSE, group.by, reference.benchmark)
+bench.summary <- summarize.bench(bench, rigorous, FALSE, group.by, reference)
 
 
 bench.summary.graph <- data.frame(bench.summary)
@@ -149,7 +142,7 @@ colnames(bench.summary.ltx) <- sapply(colnames(bench.summary.ltx), function(x) {
 # ----- Outputting -----
 
 # Excel for overall data
-write.xlsx(bench.tot, paste0(input.basename, ".xlsx"), append=FALSE, sheetName="bench")
+write.xlsx(bench, paste0(input.basename, ".xlsx"), append=FALSE, sheetName="bench")
 write.xlsx(bench.summary, paste0(input.basename, ".xlsx"), append=TRUE, sheetName="summary")
 
 dodge <- position_dodge(width=.75)
