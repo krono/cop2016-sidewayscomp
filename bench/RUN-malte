@@ -1,0 +1,48 @@
+#!/bin/bash
+
+set -e
+
+PY_DEFAULT=${PY:-python}
+FILE_DEFAULT="contextpy/contextpyBenchmark.py"
+
+if [ "Darwin" = "$(uname)" ]; then
+    OS=osx
+else
+    OS=win10
+    # for now
+fi
+
+function _run {
+    PY="${1:-$PY_DEFAULT}"; shift || true
+    FILE="${1:-$FILE_DEFAULT}"; shift || true
+    "$PY" "$FILE" "$@" 2>/dev/null
+}
+
+function run_pypy {
+    echo "run pypy"
+    _run pypy "$@" > malte-contextpy-$OS-pypy.tsv
+}
+
+function run_pypypromote {
+    echo "run pypypromote"
+    pypypromote=~/dev/pypy/pypy/pypy-c
+    _run $pypypromote "$@" > malte-contextpy-$OS-pypypromote.tsv
+}
+
+
+function run_python {
+    echo "run python"
+    _run python "$@" > malte-contextpy-$OS-python.tsv
+}
+
+if [ "$1" = "pypy" ]; then
+    run_pypy
+elif [ "$1" = "pypypromote" ]; then
+    run_pypypromote
+elif [ "$1" = "python" ]; then
+    run_python
+else
+    run_pypypromote
+    run_pypy
+    run_python
+fi

@@ -1,0 +1,78 @@
+#!/bin/bash
+
+set -e
+
+PY_DEFAULT=${PY:-python}
+ITER_DEFAULT=${ITER:-5}
+SIZE_DEFAULT=${SITE:-20000}
+WARM_DEFAULT=${WARM:-2}
+FILE_DEFAULT=deltablue.py
+
+
+function _run {
+    PY="${1:-$PY_DEFAULT}"; shift || true
+    ITER="${1:-$ITER_DEFAULT}"; shift || true
+    SIZE="${1:-$SIZE_DEFAULT}"; shift || true
+    WARM="${1:-$WARM_DEFAULT}"; shift || true
+    FILE="${1:-$FILE_DEFAULT}"; shift || true
+    "$PY" "$FILE" "$ITER" "$WARM" "$SIZE" "$@" 2>/dev/null
+}
+
+function run_blue {
+    _run "$@" deltablue.py 0
+}
+
+function run_violet {
+    _run "$@" deltared.py 0
+}
+
+function run_red {
+    _run "$@" deltared.py 1
+}
+
+function run_pypy {
+    echo "run pypy"
+    printf "Benchmark\titers\truntime\n" > deltablue-contextpy-osx-pypy.tsv
+    echo "    blue"
+    run_blue pypy "$@" >> deltablue-contextpy-osx-pypy.tsv
+    echo "    violet"
+    run_violet pypy "$@" >> deltablue-contextpy-osx-pypy.tsv
+    echo "    red"
+    run_red pypy "$@" >> deltablue-contextpy-osx-pypy.tsv
+}
+
+function run_pypypromote {
+    echo "run pypypromote"
+    pypypromote=~/dev/pypy/pypy/pypy-c
+    printf "Benchmark\titers\truntime\n" > deltablue-contextpy-osx-pypypromote.tsv
+    echo "    blue"
+    run_blue $pypypromote "$@" >> deltablue-contextpy-osx-pypypromote.tsv
+    echo "    violet"
+    run_violet $pypypromote "$@" >> deltablue-contextpy-osx-pypypromote.tsv
+    echo "    red"
+    run_red $pypypromote "$@" >> deltablue-contextpy-osx-pypypromote.tsv
+}
+
+
+function run_python {
+    echo "run python"
+    printf "Benchmark\titers\truntime\n" > deltablue-contextpy-osx-python.tsv
+    echo "    blue"
+    run_blue python "$@" >> deltablue-contextpy-osx-python.tsv
+    echo "    violet"
+    run_violet python "$@" >> deltablue-contextpy-osx-python.tsv
+    echo "    red"
+    run_red python "$@" >> deltablue-contextpy-osx-python.tsv
+}
+
+if [ "$1" = "pypy" ]; then
+    run_pypy $ITER_DEFAULT $SIZE_DEFAULT $WARM_DEFAULT
+elif [ "$1" = "pypypromote" ]; then
+    run_pypypromote $ITER_DEFAULT $SIZE_DEFAULT $WARM_DEFAULT
+elif [ "$1" = "python" ]; then
+    run_python $ITER_DEFAULT $SIZE_DEFAULT $WARM_DEFAULT
+else
+    run_pypypromote $ITER_DEFAULT $SIZE_DEFAULT $WARM_DEFAULT
+    run_pypy $ITER_DEFAULT $SIZE_DEFAULT $WARM_DEFAULT
+    run_python $ITER_DEFAULT $SIZE_DEFAULT $WARM_DEFAULT
+fi

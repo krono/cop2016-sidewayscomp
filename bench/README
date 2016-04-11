@@ -1,0 +1,23 @@
+deltablue.py -- from https://github.com/smarr/Classic-Benchmarks 
+deltared.py -- adapted from deltablue with layers
+contextpy -- copy from https://bitbucket.org/cfbolz/contextpy
+
+MalteBench: (-->analyze_malte.R)
+- ContextJS OSX Chrome 50.0.2661.66 beta (64-bit)
+- ContextJS Win10 Edge -- tim?
+- ContextJS Win10 Chrome -- tim?
+- (ContextJS Win10 Firefox -- tim?)
+
+- ContextPy OSX Python 2.7.5 *
+- ContextPy OSX PyPy 5.0.1 *
+- ContextPy OSX PyPyPromote (5.1.0-alpha0 648874ef8243) *
+
+DeltaBlue/Violet/Red: (-->analyze_deltablue.R)
+- ContextPy OSX Python 2.7.5 **
+- ContextPy OSX PyPy 5.0.1 **
+- ContextPy OSX PyPyPromote (5.1.0-alpha0 648874ef8243) **
+
+
+*  generate with ./RUN-malte
+** generate with ./RUN-deltabue
+ 
