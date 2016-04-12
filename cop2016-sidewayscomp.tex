@@ -76,6 +76,22 @@ keyword1, keyword2
 \end{itemize}
 
 \section{<<Background: COP, COPSurvey, MetaTracing>>}
+
+\ac{cop} as a modularity mechanism to dynamically adapt behavior at run-time has
+been demonstrated to be useful in a variety of scenarios. Beyond its original
+motivation for dynamically adapting systems based on environmental factors such
+as battery level, geolocation, or time of day~\todo{cite}, \ac{cop} has also
+been applied to provide safety in the development of live
+systems~\cite{lincke+:2012:scoping-changes} or to let multiple conflicting
+versions of programming interfaces co-exist~\todo{cite my talk cop 2013}. 
+
+... % Tim: Don't think these examples are needed in this workshop context
+However, as with many abstraction mechanisms, \ac{cop} comes with some overhead,
+a fact that has been repeatedly
+recognized~\cite{springer2015efficient,appeltauer2010layered}. So far, however,
+attempts to apply traditional compiler and optimization techniques have proven
+to be difficult and still yield considerable overhead.
+
 \section{<<Solution: Sideways-composition and metatracing>>}
 \section{<<Impl: ContextPy, VM interface, applevel promote>>}
 \section{<<Eval: Benchmarks>>}
