@@ -77,6 +77,8 @@ keyword1, keyword2
 
 \section{<<Background: COP, COPSurvey, MetaTracing>>}
 
+\subsection{The Performance of COP}
+\label{sec:performance-cop}
 \ac{cop} as a modularity mechanism to dynamically adapt behavior at run-time has
 been demonstrated to be useful in a variety of scenarios. Beyond its original
 motivation for dynamically adapting systems based on environmental factors such
@@ -86,10 +88,32 @@ systems~\cite{lincke+:2012:scoping-changes} or to let multiple conflicting
 versions of programming interfaces co-exist~\todo{cite my talk cop 2013}. 
 
 However, as with many abstraction mechanisms, \ac{cop} comes with some overhead,
-a fact that has been repeatedly
-recognized~\cite{springer2015efficient,appeltauer2010layered}. So far, however,
-attempts to apply traditional compiler and optimization techniques have proven
-to be difficult and still yield considerable overhead.
+a fact that has been repeatedly recognized. Context layer aware method lookup
+requires additional operations at run-time. Most \ac{cop} extensions to dynamic
+languages use the host languages meta-programming facilities to redirect method
+dispatch, whereas statically compiled languages require additional compilation
+steps to construct data structures to track layer activation states at
+run-time. Both of these solutions come with considerable performance decrease
+from 75 \% up to 99 \%~\cite{appeltauer+:2009:comparison-context-oriented}.
+
+So far, attempts to apply traditional compiler and optimization techniques have
+proven to be difficult and can only reduce the performance overhead in some
+cases. A common approach is to shift the performance impact to the layer
+activation time. ContextAmber~\cite{springer2015efficient} optimistically
+flattens layered methods when the layer composition changes to achieve near
+native performance during execution. An extension to the C++ configuration
+management system Elektra~\cite{Raab:2014:PEE:2637066.2637074} make use of
+extensive code generation and caching of the active layer composition to
+minimize the performance impact of running with active layers in a tight
+loop. Both approaches nearly eliminate the performance impact of layers when the
+composition changes rarely, but at the cost of reduced performance for
+applications where the layer composition may change frequently. \ac{vm}
+facilities such as Java's INVOKEDYNAMIC instruction provide only minimally
+improved performance compared to an implementation using language-level caching
+facilities, albeit using less code and a simplified architecture.
+
+\subsection{Meta-Tracing JIT}
+\label{sec:meta-tracing-jit}
 
 \section{<<Solution: Sideways-composition and metatracing>>}
 \section{<<Impl: ContextPy, VM interface, applevel promote>>}
