@@ -136,7 +136,7 @@ sideways composition and \ac{cop}.
 changes into an existing hierarchy of behavior. These hierarchies are typically
 defined by the static and/or single inheritance of object systems. These
 hierarchies are typically important for execution time performance, as they
-form the data base for \emph{lookup}.
+form the basis for \emph{lookup}.
 
 Most execution environments, such as \acp{vm} for dynamic object-oriented
 languages, assume that those hierarchies change rarely and hence lookup can be
@@ -144,12 +144,8 @@ fast. However, using sideways composition to alter behavior invalidates this
 assumption. Especially, since \ac{cop} explicitly redefines lookup based on
 currently active layers. Execution environments typically have to decide,
 whether to always re-exercise the lookup for every method under the active
-layers, or cache lookup information based on active layer.
-
-With meta-tracing \ac{jit} compilers, this effect is much less severe. Although
-rarely-changing lookup still is helpful for its operation, a change in lookup
-\--- for example induced by a layer activation \--- can be anticipated and be
-accounted for. For example in the sequence
+layers, or cache (and invalidate) lookup information when the composition of
+active layers changes. For example in the sequence
 \begin{lstlisting}
 -- active layers: §\(\emptyset\)§
 method1()
@@ -166,17 +162,26 @@ a \ac{cop} implementation typically uses one of the following two strategies:
   lookup information due to change in active layers, use (new) cached lookup
   information for \lstinline|method2()|.
 \end{enumerate}
-With a properly instructed meta-tracing \ac{jit} compiler, a third way becomes
-possible. At points in the execution where the active set of layers becomes
-important, a \emph{guard} ensures that this set did not change. While
-counter-intuitive at first, this actually is a benefit. When a certain set has
-been encountered often enough at the guard, the meta-tracing \ac{jit} compiler
-will introduce a \emph{bridge} into a new part of a trace, in which \emph{this}
-set can be assumed not to change, and lookup can be optimized accordingly. Note
-that this resembles strategy 2 above, but is implicit and actually guided by
-the \ac{jit} compiler. Therefore, the actual \ac{cop} implementation does not
-have to manage the caching information when altering the lookup information,
-saving both execution time and implementation complexity.
+Both cases produces a performance impact either on every lookup or on every
+layer change.
+
+With meta-tracing \ac{jit} compilers, however, this effect is much less
+severe. Although rarely-changing lookup still is helpful for its operation, a
+change in lookup \--- for example induced by a layer activation \--- can be
+anticipated and be accounted for.
+
+Thus, with a properly instructed meta-tracing \ac{jit} compiler, a third option
+becomes available. At points in the execution where the active set of layers
+becomes important, a \emph{guard} ensures that this set did not change. While
+counter-intuitive at first, this actually is a benefit. When a certain different
+set has been encountered often enough at the guard, the meta-tracing \ac{jit}
+compiler will introduce a \emph{bridge} into a new part of a trace, in which
+\emph{this} different set can be assumed not to change, and lookup can be
+optimized accordingly. Note that this resembles strategy 2 above, but is
+implicit and actually guided by the \ac{jit} compiler. Therefore, the actual
+\ac{cop} implementation does not have to manage the caching information when
+altering the lookup information, saving both execution time and implementation
+complexity.
 
 \paragraph{Promoted layer sets} 
 
