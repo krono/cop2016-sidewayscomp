@@ -44,8 +44,8 @@
 %            {King's College, London}
 %            {cfbolz@gmx.de}
 \authorinfo{Tobias Pape\textsuperscript{*} \and Tim Felgentreff\textsuperscript{*\textdagger} \and Robert Hirschfeld\textsuperscript{*\textdagger}}
-           {\textsuperscript{*}Hasso Plattner Institute, University of Potsdam, Germany;\\
-           \textsuperscript{\textdagger}Communications Design Group (CDG) , SAP Labs, USA; \\
+           {\textsuperscript{*}Hasso Plattner Institute, University of Potsdam, Germany\\
+           \textsuperscript{\textdagger}Communications Design Group (CDG), SAP Labs, USA\\
            \textsuperscript{\textdagger}Viewpoints Research Institute, USA}
            {\{firstname\}.\{lastname\}@hpi.uni-potsdam.de}
 
@@ -130,8 +130,10 @@ facilities, albeit using less code and a simplified architecture.
 \section{<<Solution: Sideways-composition and metatracing>>}
 
 We propose that meta-tracing \ac{jit} compilers can reduce the overhead of
-sideways composition and \ac{cop}.
+sideways composition and \ac{cop}, and that \emph{promoting} the composition of
+active layers can reduce the overhead even further.
 
+\subsection{Employing a meta-tracing \protect\acs{jit}}
 \Acl{cop} employs sideways composition to inject context-dependent behavioral
 changes into an existing hierarchy of behavior. These hierarchies are typically
 defined by the static and/or single inheritance of object systems. These
@@ -186,75 +188,38 @@ Therefore, the actual \ac{cop} implementation does not have to manage the
 caching information when altering the lookup information, saving both execution
 time and implementation complexity.
 
-\paragraph{Promoted layer compositions} 
+\subsection{Promoting the compositions of active layers}
 
-\iffalse
-% Frm that paper DO NOT iftrue.
-Promotion is essentially a tool for trace specialization. There are places in
-the interpreter where it would open a lot of optimization opportunities if a
-variable were constant, even though it could have different values in practice.
-In such a place, promotion can be used.
+The compositions of active layers is crucially important for the lookup in
+\ac{cop}, and all strategies above reflect this. However, only the
+language-level implementation of \ac{cop} actually knows about the
+composition's importance, and even for meta-tracing \ac{jit} compiler's
+strategy, the \ac{jit} compiler first hast to become aware of the fact that the
+composition is \--- indeed \--- important for its trace. Yet, the \ac{jit}
+compile can only apply heuristics to identify the composition as
+trace-important.
 
-The typical reason to do that is if there is a lot of computation depending on
-the value of one variable.
+This situation is commonly known when implementing \acp{vm} that use a
+meta-tracing \ac{jit} compiler. Based on the value of a certain object it may
+be desirable to \emph{specialize} traces to these values (essentially what
+happened above with the guard and the bridge).
+Implementers can chose to \emph{promote}~\cite[\S
+3.1]{bolz+:2011:runtime-feedback} such an object and the \ac{jit} compiler will
+ensure that traces are actually specialized to the object's values,  regardless
+of wether the \ac{jit} compiler's \emph{heuristics} would result in the same
+specialization or not. If applied carefully, this promotion can decrease
+execution time.
 
-Let us make this more concrete. If we trace a call to the function (written in
-RPython) on the left, we get the trace on the right:
-
-Observe how the first two operations could be constant-folded if the value of
-x1 were known. Let us assume that the value of x in the RPython code can vary,
-but does so rarely, i.e. only takes a few different values at runtime. If this
-is the case, we can add a hint to promote x, like this
-
-The hint indicates that x is likely a runtime constant and the JIT should try
-to perform runtime specialization on it in the code that follows. When just
-running the code, the promote function has no effect. When tracing, some extra
-work is done. Let us assume that this changed function is traced with the
-arguments 4 and 8. The trace will be the same, except for one operation at the
-beginning.
-
-The promotion is turned into a guard operation in the trace. The guard captures
-the runtime value of x as it was during tracing, which can then be exploited by
-the compiler. The introduced guard specializes the trace, because it only works
-if the value of x1 is 4. From the point of view of the optimizer, this guard is
-not different frome the one produced by the if statement in the first example.
-After the guard, it can be assumed that x1 is equal to 4, meaning that the
-optimizer will turn this trace into:
-
-guard(x1 == 4) v2 =9+y1 return(v2 )
-
-Notice how the first two arithmetic operations were constant folded. The hope
-is that the guard is executed quicker than the multiplication and the addition
-that was now optimized away.
-
-If this trace is executed with values of x1 other than 4, the guard will fail,
-and execution will continue in the interpreter. If the guard fails often
-enough, a new trace will be started from the guard. This other trace will
-capture a different value of x1. If it is e.g. 2, then the optimized trace
-looks like this:
-
-guard(x1 == 2) v2 =5+y1 return(v2 )
-
-
-This new trace will be attached to the guard instruction of the first trace. If
-x1 takes on even more values, a new trace will eventually be made for all of
-them, linking them into a chain. This is clearly not desirable, so we should
-promote only variables that do not vary much. However, adding a promotion hint
-will never produce wrong results. It might just lead to too much machine code
-being generated.
-
-Promoting integers, as in the examples above, is not used that often. However,
-the internals of dynamic language interpreters of- ten have values that are
-variable but vary little in the context of parts of a user program. An example
-would be the types of vari- ables in a user function, which rarely change in a
-dynamic lan- guage in practice (even though they could). In the interpreter,
-these user-level types are values. Thus promoting them will lead to
-type-specialization on the level of the user program. Section 4 will present a
-complete example of how this works.
-\fi
-
-
-~\cite{bolz+:2011:runtime-feedback}
+Up until recently, this \emph{promotion} of objects had not been available to
+language-level implementers of \ac{cop}. However, at the time of writing, one
+\ac{vm} with meta-tracing \ac{jit} compiler (PyPy) exposes the \emph{promote}
+functionality to the language-level as experimental features and it is possible
+to use it for a \ac{cop} implementation. The composition of active layers can
+now be promoted and the meta-tracing \ac{jit} compiler now ensures that (a) a
+specialized traces exists for each encountered composition, and (b) within a
+given trace, the composition wont change and can be relied upon. This
+assumption now can be made when exercising lookup during execution, saving
+execution time.
 
 
 \section{<<Impl: ContextPy, VM interface, applevel promote>>}
