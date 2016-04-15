@@ -15,7 +15,7 @@ function _run {
     SIZE="${1:-$SIZE_DEFAULT}"; shift || true
     WARM="${1:-$WARM_DEFAULT}"; shift || true
     FILE="${1:-$FILE_DEFAULT}"; shift || true
-    "$PY" "$FILE" "$ITER" "$WARM" "$SIZE" "$@" 2>/dev/null
+    $PY "$FILE" "$ITER" "$WARM" "$SIZE" "$@" 2>/dev/null
 }
 
 function run_blue {
@@ -35,11 +35,11 @@ function run_pypy {
     local py="pypy --jit trace_limit=15000"
     printf "Benchmark\titers\truntime\n" > deltablue-contextpy-osx-pypy.tsv
     echo "    blue"
-    run_blue $py "$@" >> deltablue-contextpy-osx-pypy.tsv
+    run_blue "$py" "$@" >> deltablue-contextpy-osx-pypy.tsv
     echo "    violet"
-    run_violet $py "$@" >> deltablue-contextpy-osx-pypy.tsv
+    run_violet "$py" "$@" >> deltablue-contextpy-osx-pypy.tsv
     echo "    red"
-    run_red $py "$@" >> deltablue-contextpy-osx-pypy.tsv
+    run_red "$py" "$@" >> deltablue-contextpy-osx-pypy.tsv
 }
 
 function run_pypypromote {
@@ -48,11 +48,11 @@ function run_pypypromote {
     local py="$pypypromote --jit trace_limit=15000"
     printf "Benchmark\titers\truntime\n" > deltablue-contextpy-osx-pypypromote.tsv
     echo "    blue"
-    run_blue $py "$@" >> deltablue-contextpy-osx-pypypromote.tsv
+    run_blue "$py" "$@" >> deltablue-contextpy-osx-pypypromote.tsv
     echo "    violet"
-    run_violet $py "$@" >> deltablue-contextpy-osx-pypypromote.tsv
+    run_violet "$py" "$@" >> deltablue-contextpy-osx-pypypromote.tsv
     echo "    red"
-    run_red $py "$@" >> deltablue-contextpy-osx-pypypromote.tsv
+    run_red "$py" "$@" >> deltablue-contextpy-osx-pypypromote.tsv
 }
 
 
@@ -60,11 +60,11 @@ function run_python {
     echo "run python"
     printf "Benchmark\titers\truntime\n" > deltablue-contextpy-osx-python.tsv
     echo "    blue"
-    run_blue python "$@" >> deltablue-contextpy-osx-python.tsv
+    run_blue "python" "$@" >> deltablue-contextpy-osx-python.tsv
     echo "    violet"
-    run_violet python "$@" >> deltablue-contextpy-osx-python.tsv
+    run_violet "python" "$@" >> deltablue-contextpy-osx-python.tsv
     echo "    red"
-    run_red python "$@" >> deltablue-contextpy-osx-python.tsv
+    run_red "python" "$@" >> deltablue-contextpy-osx-python.tsv
 }
 
 if [ "$1" = "pypy" ]; then
