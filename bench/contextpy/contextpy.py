@@ -79,10 +79,20 @@ _stack_cache = {}
 class layerstack(tuple):
     def __new__(cls, layers):
         layers = tuple.__new__(cls, layers)
+        layers._cached_next = None
+        layers._cached_next_stack = None
         return _stack_cache.setdefault(layers, layers)
 
     def __add__(self, other):
         return layerstack(tuple.__add__(self, other))
+
+    def _append(self, next):
+        if next is self._cached_next:
+            return self._cached_next_stack
+        result = self + (next, )
+        self._cached_next = next
+        self._cached_next_stack = result
+        return result
 
 _baselayer = layer("no_layer")
 # tuple with layers that are always active
@@ -100,21 +110,33 @@ class _LayerManager(object):
 
     def __enter__(self):
         self._oldLayers = _tls.activelayers
-        _tls.activelayers = layerstack(self._getActiveLayers())
+        _tls.activelayers = self._getActiveLayers()
 
     def __exit__(self, exc_type, exc_value, exc_tb):
         _tls.activelayers = self._oldLayers
 
 class _LayerActivationManager(_LayerManager):
     def _getActiveLayers(self):
-        return [layer for layer in self._oldLayers if layer not in self._layers] + self._layers
+        return layerstack([layer for layer in self._oldLayers if layer not in self._layers] + self._layers)
+
+class _LayerActivationManager1(_LayerManager):
+    def __init__(self, layers):
+        self._layer, = layers
+        self._layers = layers
+        self._oldLayers = ()
+
+    def _getActiveLayers(self):
+        if self._layer not in self._oldLayers:
+            return self._oldLayers._append(self._layer)
+        return layerstack([layer for layer in self._oldLayers if layer != self._layer] + self._layers)
+
 
 class _LayerDeactivationManager(_LayerManager):
     def _getActiveLayers(self):
-        return [layer for layer in self._oldLayers if layer not in self._layers]
+        return layerstack([layer for layer in self._oldLayers if layer not in self._layers])
 
 def activelayer(layer):
-    return _LayerActivationManager([layer])
+    return _LayerActivationManager1([layer])
 
 def inactivelayer(layer):
     return _LayerDeactivationManager([layer])
