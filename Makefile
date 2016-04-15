@@ -25,20 +25,20 @@ all: $(PDF)
 clean :
 	rm -f $(TO_CLEAN) *.log
 
-%.pdf: %.tex %.aux %.bbl 
+%.pdf: %.tex %.aux %.bbl
 	@echo "TeXing for pdf"
 	@$(LATEX) $<
 	@while grep -q "Rerun to get cross-references right" \
 	$(BASE).log ; do \
 	    echo " again..." ; \
-	    $(LATEX) $< >/dev/null; \
+	    $(LATEX) $< ; \
 	done
 
 %.bbl: $(BIB)
 	@echo "BibTeXing"
 	@rm -f $(PDF)
-	@$(BIBTEX) $(BASE) >/dev/null
+	@$(BIBTEX) $(BASE)
 
 %.aux:
 	@echo "TeXing for aux"
-	@$(LATEX) $(BASE) >/dev/null
+	@$(LATEX) $(BASE)
