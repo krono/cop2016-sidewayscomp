@@ -38,26 +38,29 @@ source("./help.R")
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
-bench <- data.frame()
-for (tsv in tsv_names) {
-  desc <- unlist(strsplit(first(unlist(strsplit(tsv, '.', fixed=TRUE))), '-'))
-  category <- desc[[1]]
-  #   implementation <- desc[[2]]
-  os <- desc[[3]]
-  vm <- desc[[4]]
-  print(paste('reading', tsv));
-  vm_bench <- read.delim(tsv, sep="\t", comment.char = "#", header=TRUE, stringsAsFactors=FALSE,strip.white=TRUE,
-                        col.names=c('name', 'ops', 'time', 'value'))
-  vm_bench <- vm_bench[!grepl('^Wrapper', vm_bench$name),,drop=TRUE]
-  vm_bench$name <- sapply(vm_bench$name, function(x) {sedit(x, 'Method:', 'Method')})
-  vm_bench$name <- sapply(vm_bench$name, function(x) {sedit(x, '_', ':')})
-  vm_bench$os <- os
-  
-  #   vm_bench$category <- category                    
-  sub_bench <- read.table(sep=":",text=as.character(vm_bench$name), col.names=c('impl', 'benchmark', 'variable_values'))
-  vm_bench$vm <- paste(sub_bench$impl, capitalize(vm))
-  vm_bench <- cbind(vm_bench, sub_bench[c('benchmark','variable_values')])  
-  bench <- rbind(bench, vm_bench)}
+bench <- (function () {
+  df <- data.frame()
+  for (vm in tsv_names) {
+    desc <- unlist(strsplit(first(unlist(strsplit(tsv, '.', fixed=TRUE))), '-'))
+    category <- desc[[1]]
+    #   implementation <- desc[[2]]
+    os <- desc[[3]]
+    vm <- desc[[4]]
+    print(paste('reading', tsv));
+    vm_bench <- read.delim(tsv, sep="\t", comment.char = "#", header=TRUE, stringsAsFactors=FALSE,strip.white=TRUE,
+                          col.names=c('name', 'ops', 'time', 'value'))
+    vm_bench <- vm_bench[!grepl('^Wrapper', vm_bench$name),,drop=TRUE]
+    vm_bench$name <- sapply(vm_bench$name, function(x) {sedit(x, 'Method:', 'Method')})
+    vm_bench$name <- sapply(vm_bench$name, function(x) {sedit(x, '_', ':')})
+    vm_bench$os <- os
+    
+    #   vm_bench$category <- category                    
+    sub_bench <- read.table(sep=":",text=as.character(vm_bench$name), col.names=c('impl', 'benchmark', 'variable_values'))
+    vm_bench$vm <- paste(sub_bench$impl, capitalize(vm))
+    vm_bench <- cbind(vm_bench, sub_bench[c('benchmark','variable_values')])  
+    df <- rbind(df, vm_bench)}
+  df
+})()
 
 bench <- bench[c('os','vm','benchmark','variable_values','ops', 'time', 'value')]
 

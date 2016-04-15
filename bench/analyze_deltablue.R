@@ -45,13 +45,16 @@ source("./help.R")
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
-bench <- data.frame()
-for (vm in tsv_names) {
-  tsv_name <- last(vm)
-  vm_bench <- read.delim(paste0('deltablue-contextpy-osx-',tsv_name,'.tsv'), comment.char = "#", header=TRUE,
-                        col.names=c('benchmark', 'iter', 'value'))
-  vm_bench$vm <- first(capitalize(vm))
-  bench <- rbind(bench, vm_bench)}
+bench <- (function () {
+  df <- data.frame()
+  for (vm in tsv_names) {
+    tsv_name <- last(vm)
+    vm_bench <- read.delim(paste0('deltablue-contextpy-osx-',tsv_name,'.tsv'), comment.char = "#", header=TRUE,
+                          col.names=c('benchmark', 'iter', 'value'))
+    vm_bench$vm <- first(capitalize(vm))
+    df <- rbind(df, vm_bench)}
+  df
+})()
 
 # bench <- droplevels(bench[bench$criterion != 'gc',,])
 bench$vm <- factor(bench$vm, levels = sapply(sapply(tsv_names, first), capitalize))  
@@ -148,24 +151,31 @@ write.xlsx(bench.tot, paste0(input.basename, ".xlsx"), append=FALSE, sheetName="
 write.xlsx(bench.summary, paste0(input.basename, ".xlsx"), append=TRUE, sheetName="summary")
 
 dodge <- position_dodge(width=.75)
-ymax <- round_any(max(bench.summary.graph$mean, na.rm=TRUE), 0.5, ceiling)
 
-# -------------------------------- Normal -----------------------------------------
+(function() {
+ymax <- round_any(max(bench.summary.graph$cnfIntHigh/1e6, na.rm=TRUE), .5, ceiling)
+
+# -------------------------------- Absolute -----------------------------------------
 p <- ggplot(data=bench.summary.graph,
 #        aes(x=benchmark,y=mean.norm,group=interaction(benchmark,vm),fill=vm,)
-       aes(x=vm,y=mean,group=interaction(vm,benchmark),fill=benchmark,)
+       aes(x=vm,y=mean/1e6,group=interaction(vm,benchmark),fill=benchmark,)
 ) + default.theme() +
+  theme(
+    axis.text.x  = element_text(size=6, angle=0, hjust=0.5),
+    legend.position=c(0.75, .8),
+    plot.margin = unit(c(0,0,-3,-0.5),"mm")) +
 #   geom_bar(stat="identity", position=dodge, width=.6, aes(fill = vm))+
   geom_bar(stat="identity", position=dodge, width=.6, aes(fill = benchmark))+
 #   geom_point(position=dodge,aes(y=0.15, ymax=ymax, shape=vm),size=2, color="grey90",stat="identity") +
-  geom_point(position=dodge,aes(y=0.15, ymax=ymax, shape=benchmark),size=2, color="grey90",stat="identity") +
-  ylab("Relative Runtime") +
-  scale_y_continuous(breaks=seq(0,ymax,1), limits=c(0,ymax),expand=c(0,0)) +
+#   geom_point(position=dodge,aes(y=0.15, ymax=ymax, shape=benchmark),size=2, color="grey90",stat="identity") +
+  ylab("Absolute Runtime in seconds") +
+  scale_y_continuous(breaks=seq(0,ymax,5), limits=c(0,ymax),expand=c(0,0)) +
   scale_fill_brewer(name = "Virtual Machine", type="qual", palette="Set1", guide="none") 
+  scale_shape(name = "Virtual Machine", solid = FALSE) 
 # +
 #   facet_grid(. ~ overall, scales="free", space="free",labeller=label_bquote(""))
 if (rigorous) {
-  p <- p + geom_errorbar(aes(ymin=lower, ymax = upper),  position=dodge, color=I("black"), size=.2)  
+  p <- p + geom_errorbar(aes(ymin=cnfIntLow/1e6, ymax=cnfIntHigh/1e6),  position=dodge, color=I("black"), size=.2)  
 }
 
 p
@@ -174,20 +184,27 @@ gg.file <- paste0(input.basename, ".pdf")
 ggsave(gg.file, width=figure.width * ratio, height=figure.height, units=c("in"), colormodel='rgb', useDingbats=FALSE)
 embed_fonts(gg.file, options=pdf.embed.options)
 
+})()
 
+(function() {
 # -------------------------------- Normal -----------------------------------------
 ymax <- round_any(max(bench.summary.graph$mean.norm, na.rm=TRUE), 0.5, ceiling)
 p <- ggplot(data=bench.summary.graph,
             #        aes(x=benchmark,y=mean.norm,group=interaction(benchmark,vm),fill=vm,)
             aes(x=vm,y=mean.norm,group=interaction(vm,benchmark),fill=benchmark,)
 ) + default.theme() +
+  theme(
+    axis.text.x  = element_text(size=6, angle=0, hjust=0.5),
+    legend.position=c(0.75, .8),
+    plot.margin = unit(c(0,0,-3,-0.5),"mm")) +
   #   geom_bar(stat="identity", position=dodge, width=.6, aes(fill = vm))+
   geom_bar(stat="identity", position=dodge, width=.6, aes(fill = benchmark))+
   #   geom_point(position=dodge,aes(y=0.15, ymax=ymax, shape=vm),size=2, color="grey90",stat="identity") +
   geom_point(position=dodge,aes(y=0.15, ymax=ymax, shape=benchmark),size=2, color="grey90",stat="identity") +
   ylab("Relative Runtime") +
   scale_y_continuous(breaks=seq(0,ymax,1), limits=c(0,ymax),expand=c(0,0)) +
-  scale_fill_brewer(name = "Virtual Machine", type="qual", palette="Set1", guide="none") 
+  scale_fill_brewer(name = "Virtual Machine", type="qual", palette="Set1", guide="none")+
+  scale_shape(name = "Virtual Machine", solid = FALSE) 
 # +
 #   facet_grid(. ~ overall, scales="free", space="free",labeller=label_bquote(""))
 if (rigorous) {
@@ -199,6 +216,7 @@ p
 gg.file <- paste0(input.basename, "-norm.pdf")
 ggsave(gg.file, width=figure.width * ratio, height=figure.height, units=c("in"), colormodel='rgb', useDingbats=FALSE)
 embed_fonts(gg.file, options=pdf.embed.options)
+})()
 
 if (rigorous) {
   # LaTeX table, all
