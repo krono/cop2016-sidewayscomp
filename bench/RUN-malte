@@ -15,34 +15,54 @@ fi
 function _run {
     PY="${1:-$PY_DEFAULT}"; shift || true
     FILE="${1:-$FILE_DEFAULT}"; shift || true
-    "$PY" "$FILE" "$@" 2>/dev/null
+    $PY "$FILE" "$@" 2>/dev/null
 }
 
 function run_pypy {
-    echo "run pypy"
-    _run pypy "$@" > malte-contextpy-$OS-pypy.tsv
+    echo "run pypy $@"
+    _run "pypy --jit trace_limit=15000" "$@" >> malte-contextpy-$OS-pypy.tsv
 }
 
 function run_pypypromote {
-    echo "run pypypromote"
+    echo "run pypypromote $@"
     pypypromote=~/dev/pypy/pypy/pypy-c
-    _run $pypypromote "$@" > malte-contextpy-$OS-pypypromote.tsv
+    _run "$pypypromote --jit trace_limit=15000" "$@" >> malte-contextpy-$OS-pypypromote.tsv
 }
 
 
 function run_python {
-    echo "run python"
-    _run python "$@" > malte-contextpy-$OS-python.tsv
+    echo "run python $@"
+    _run python "$@" >> malte-contextpy-$OS-python.tsv
 }
 
-if [ "$1" = "pypy" ]; then
-    run_pypy
-elif [ "$1" = "pypypromote" ]; then
-    run_pypypromote
-elif [ "$1" = "python" ]; then
-    run_python
+function all_benches {
+    local it="$1"; shift;
+    local do_it="run_$it";
+    printf "name	ops	time	ops/time\n" > malte-contextpy-$OS-$it.tsv
+    
+    bench="runtime"
+    # for kind in "standard" "nolayer" "layer"; do
+    for kind in "nolayer" "layer"; do
+        # contextL only does these, too
+        for num_layers in {0..10}; do 
+            # ContextJS only does 0..10
+            $do_it $FILE_DEFAULT $bench $num_layers $kind
+        done
+    done
+    
+    bench="activation"
+    # for kind in "flat" "nested"; do
+        kind="nested" # contextL only does these, too
+        for num_layers in {0..5}; do 
+            $do_it $FILE_DEFAULT $bench $num_layers $kind
+        done
+    # done
+}
+
+if [ ! -z "$1" ]; then
+    all_benches $1
 else
-    run_pypypromote
-    run_pypy
-    run_python
+    all_benches pypypromote
+    all_benches pypy
+    all_benches python
 fi

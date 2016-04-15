@@ -45,7 +45,8 @@ for (tsv in tsv_names) {
   #   implementation <- desc[[2]]
   os <- desc[[3]]
   vm <- desc[[4]]
-  vm_bench <- read.delim(tsv, comment.char = "#", header=TRUE, stringsAsFactors=FALSE,
+  print(paste('reading', tsv));
+  vm_bench <- read.delim(tsv, sep="\t", comment.char = "#", header=TRUE, stringsAsFactors=FALSE,strip.white=TRUE,
                         col.names=c('name', 'ops', 'time', 'value'))
   vm_bench <- vm_bench[!grepl('^Wrapper', vm_bench$name),,drop=TRUE]
   vm_bench$name <- sapply(vm_bench$name, function(x) {sedit(x, 'Method:', 'Method')})
@@ -78,7 +79,7 @@ if (num.vars == 0) {
 }
 rigorous <- num.runs > (num.vms * num.benches * num.vars * num.crit)
 
-bench <- fill.missing(bench)
+# bench <- fill.missing(bench)
 
 
 ######################################################

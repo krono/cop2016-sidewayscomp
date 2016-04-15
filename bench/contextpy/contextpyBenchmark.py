@@ -212,7 +212,8 @@ class ContextPyMethodBench2(object):
 
     @base
     def withLayer(self):
-        self.counter_00 += 1
+        pass # cf. contextl-benchmark.lisp
+        # self.counter_00 += 1
 
     @around(l01)
     def withLayer(self):
@@ -333,7 +334,7 @@ class ContextPyMethodBench2(object):
             consumedTime = timer.readTimer()
             timer.addOpsToTimer(16*size)
             size *= 2
-        print "%s\t%s" % label, timer.printPerfTimer()
+        print "%s\t%s" % (label, timer.printPerfTimer())
         #print self.counter_01, self.counter_02, self.counter_03, self.counter_04
 
 
@@ -356,7 +357,7 @@ class ContextPyMethodBench2(object):
             consumedTime = timer.readTimer()
             timer.addOpsToTimer(16*size)
             size *= 2
-        print "%s\t%s" % label, timer.printPerfTimer()
+        print "%s\t%s" % (label, timer.printPerfTimer())
         #print self.counter_01, self.counter_02, self.counter_03, self.counter_04
 
     def runMethodWithoutLayers(self, label, **layers):
@@ -377,55 +378,96 @@ class ContextPyMethodBench2(object):
             consumedTime = timer.readTimer()
             timer.addOpsToTimer(16*size)
             size *= 2
-        print "%s\t%s" % label, timer.printPerfTimer()
+        print "%s\t%s" % (label, timer.printPerfTimer())
         #print self.counter_01, self.counter_02, self.counter_03, self.counter_04
 
-    def run(self):
+    def run(self, num_layers, arg):
         gc.disable()
 
-        self.runMethodWithoutLayers("ContextPy:Method:Standard:0")
-        self.runMethodWithoutLayers("ContextPy:Method:Standard:1", l01=True)
-        self.runMethodWithoutLayers("ContextPy:Method:Standard:2", l01=True,l02=True)
-        self.runMethodWithoutLayers("ContextPy:Method:Standard:3", l01=True,l02=True,l03=True)
-        self.runMethodWithoutLayers("ContextPy:Method:Standard:4", l01=True,l02=True,l03=True,l04=True)
-        self.runMethodWithoutLayers("ContextPy:Method:Standard:5", l01=True,l02=True,l03=True,l04=True,l05=True)
-        self.runMethodWithoutLayers("ContextPy:Method:Standard:6", l01=True,l02=True,l03=True,l04=True,l05=True,l06=True)
-        self.runMethodWithoutLayers("ContextPy:Method:Standard:7", l01=True,l02=True,l03=True,l04=True,l05=True,l06=True,l07=True)
-        self.runMethodWithoutLayers("ContextPy:Method:Standard:8", l01=True,l02=True,l03=True,l04=True,l05=True,l06=True,l07=True,l08=True)
-        self.runMethodWithoutLayers("ContextPy:Method:Standard:9", l01=True,l02=True,l03=True,l04=True,l05=True,l06=True,l07=True,l08=True,l09=True)
-        self.runMethodWithoutLayers("ContextPy:Method:Standard:10", l01=True,l02=True,l03=True,l04=True,l05=True,l06=True,l07=True,l08=True,l09=True,l10=True)
-        # self.runMethodWithoutLayers("ContextPy:Method:Standard:11", l01=True,l02=True,l03=True,l04=True,l05=True,l06=True,l07=True,l08=True,l09=True,l10=True, l11=True)
-        # self.runMethodWithoutLayers("ContextPy:Method:Standard:12", l01=True,l02=True,l03=True,l04=True,l05=True,l06=True,l07=True,l08=True,l09=True,l10=True, l11=True, l12=True)
-        # self.runMethodWithoutLayers("ContextPy:Method:Standard:13", l01=True,l02=True,l03=True,l04=True,l05=True,l06=True,l07=True,l08=True,l09=True,l10=True, l11=True, l12=True, l13=True)
-        # self.runMethodWithoutLayers("ContextPy:Method:Standard:14", l01=True,l02=True,l03=True,l04=True,l05=True,l06=True,l07=True,l08=True,l09=True,l10=True, l11=True, l12=True, l13=True, l14=True)
-        ## self.runMethodWithoutLayers("ContextPy:Method:Standard:15", l01=True,l02=True,l03=True,l04=True,l05=True,l06=True,l07=True,l08=True,l09=True,l10=True, l11=True, l12=True, l13=True, l14=True, l15=True)
-        # print "Start Method Benchmark"
-        self.runMethod("ContextPy:Method:NoLayer:1", self.noLayer_01)
-        self.runMethod("ContextPy:Method:NoLayer:2", self.noLayer_02)
-        self.runMethod("ContextPy:Method:NoLayer:3", self.noLayer_03)
-        self.runMethod("ContextPy:Method:NoLayer:4", self.noLayer_04)
-        self.runMethod("ContextPy:Method:NoLayer:5", self.noLayer_05)
-        self.runMethod("ContextPy:Method:NoLayer:6", self.noLayer_06)
-        self.runMethod("ContextPy:Method:NoLayer:7", self.noLayer_07)
-        self.runMethod("ContextPy:Method:NoLayer:8", self.noLayer_08)
-        self.runMethod("ContextPy:Method:NoLayer:9", self.noLayer_09)
-        self.runMethod("ContextPy:Method:NoLayer:10", self.noLayer_10)
-        # self.runMethod("ContextPy:Method:NoLayer:11", self.noLayer_11)
-        # self.runMethod("ContextPy:Method:NoLayer:12", self.noLayer_12)
-        # self.runMethod("ContextPy:Method:NoLayer:13", self.noLayer_13)
-        # self.runMethod("ContextPy:Method:NoLayer:14", self.noLayer_14)
-        # self.runMethod("ContextPy:Method:NoLayer:15", self.noLayer_15)
+        if arg == 'standard':
+            if False: pass
+            elif num_layers == 0:
+                self.runMethodWithoutLayers("ContextPy:Method:Standard:0")
+            elif num_layers == 1:
+                self.runMethodWithoutLayers("ContextPy:Method:Standard:1", l01=True)
+            elif num_layers == 2:
+                self.runMethodWithoutLayers("ContextPy:Method:Standard:2", l01=True,l02=True)
+            elif num_layers == 3:
+                self.runMethodWithoutLayers("ContextPy:Method:Standard:3", l01=True,l02=True,l03=True)
+            elif num_layers == 4:
+                self.runMethodWithoutLayers("ContextPy:Method:Standard:4", l01=True,l02=True,l03=True,l04=True)
+            elif num_layers == 5:
+                self.runMethodWithoutLayers("ContextPy:Method:Standard:5", l01=True,l02=True,l03=True,l04=True,l05=True)
+            elif num_layers == 6:
+                self.runMethodWithoutLayers("ContextPy:Method:Standard:6", l01=True,l02=True,l03=True,l04=True,l05=True,l06=True)
+            elif num_layers == 7:
+                self.runMethodWithoutLayers("ContextPy:Method:Standard:7", l01=True,l02=True,l03=True,l04=True,l05=True,l06=True,l07=True)
+            elif num_layers == 8:
+                self.runMethodWithoutLayers("ContextPy:Method:Standard:8", l01=True,l02=True,l03=True,l04=True,l05=True,l06=True,l07=True,l08=True)
+            elif num_layers == 9:
+                self.runMethodWithoutLayers("ContextPy:Method:Standard:9", l01=True,l02=True,l03=True,l04=True,l05=True,l06=True,l07=True,l08=True,l09=True)
+            elif num_layers == 10:
+                self.runMethodWithoutLayers("ContextPy:Method:Standard:10", l01=True,l02=True,l03=True,l04=True,l05=True,l06=True,l07=True,l08=True,l09=True,l10=True)
+            else:
+                print "too many layers %d for %s" % (num_layers, arg)
+                exit(3)
 
-        self.runMethodWithLayers("ContextPy:Method:WithLayer:1", l01)
-        self.runMethodWithLayers("ContextPy:Method:WithLayer:2", l01,l02)
-        self.runMethodWithLayers("ContextPy:Method:WithLayer:3", l01,l02,l03)
-        self.runMethodWithLayers("ContextPy:Method:WithLayer:4", l01,l02,l03,l04)
-        self.runMethodWithLayers("ContextPy:Method:WithLayer:5", l01,l02,l03,l04,l05)
-        self.runMethodWithLayers("ContextPy:Method:WithLayer:6", l01,l02,l03,l04,l05,l06)
-        self.runMethodWithLayers("ContextPy:Method:WithLayer:7", l01,l02,l03,l04,l05,l06,l07)
-        self.runMethodWithLayers("ContextPy:Method:WithLayer:8", l01,l02,l03,l04,l05,l06,l07,l08)
-        self.runMethodWithLayers("ContextPy:Method:WithLayer:9", l01,l02,l03,l04,l05,l06,l07,l08,l09)
-        self.runMethodWithLayers("ContextPy:Method:WithLayer:10", l01,l02,l03,l04,l05,l06,l07,l08,l09,l10)
+        elif arg == 'nolayer':
+            if False: pass
+            elif num_layers == 0:
+                pass
+                # self.runMethodWithoutLayers("ContextPy:Method:NoLayer:0")
+            elif num_layers == 1:
+                self.runMethod("ContextPy:Method:NoLayer:1", self.noLayer_01)
+            elif num_layers == 2:
+                self.runMethod("ContextPy:Method:NoLayer:2", self.noLayer_02)
+            elif num_layers == 3:
+                self.runMethod("ContextPy:Method:NoLayer:3", self.noLayer_03)
+            elif num_layers == 4:
+                self.runMethod("ContextPy:Method:NoLayer:4", self.noLayer_04)
+            elif num_layers == 5:
+                self.runMethod("ContextPy:Method:NoLayer:5", self.noLayer_05)
+            elif num_layers == 6:
+                self.runMethod("ContextPy:Method:NoLayer:6", self.noLayer_06)
+            elif num_layers == 7:
+                self.runMethod("ContextPy:Method:NoLayer:7", self.noLayer_07)
+            elif num_layers == 8:
+                self.runMethod("ContextPy:Method:NoLayer:8", self.noLayer_08)
+            elif num_layers == 9:
+                self.runMethod("ContextPy:Method:NoLayer:9", self.noLayer_09)
+            elif num_layers == 10:
+                self.runMethod("ContextPy:Method:NoLayer:10", self.noLayer_10)
+            else:
+                print "too many layers %d for %s" % (num_layers, arg)
+                exit(3)
+
+        elif arg == 'layer':
+            if False: pass
+            elif num_layers == 0:
+                self.runMethodWithLayers("ContextPy:Method:WithLayer:0")
+            elif num_layers == 1:
+                self.runMethodWithLayers("ContextPy:Method:WithLayer:1", l01)
+            elif num_layers == 2:
+                self.runMethodWithLayers("ContextPy:Method:WithLayer:2", l01,l02)
+            elif num_layers == 3:
+                self.runMethodWithLayers("ContextPy:Method:WithLayer:3", l01,l02,l03)
+            elif num_layers == 4:
+                self.runMethodWithLayers("ContextPy:Method:WithLayer:4", l01,l02,l03,l04)
+            elif num_layers == 5:
+                self.runMethodWithLayers("ContextPy:Method:WithLayer:5", l01,l02,l03,l04,l05)
+            elif num_layers == 6:
+                self.runMethodWithLayers("ContextPy:Method:WithLayer:6", l01,l02,l03,l04,l05,l06)
+            elif num_layers == 7:
+                self.runMethodWithLayers("ContextPy:Method:WithLayer:7", l01,l02,l03,l04,l05,l06,l07)
+            elif num_layers == 8:
+                self.runMethodWithLayers("ContextPy:Method:WithLayer:8", l01,l02,l03,l04,l05,l06,l07,l08)
+            elif num_layers == 9:
+                self.runMethodWithLayers("ContextPy:Method:WithLayer:9", l01,l02,l03,l04,l05,l06,l07,l08,l09)
+            elif num_layers == 10:
+                self.runMethodWithLayers("ContextPy:Method:WithLayer:10", l01,l02,l03,l04,l05,l06,l07,l08,l09,l10)
+            else:
+                print "too many layers %d for %s" % (num_layers, arg)
+                exit(3)
 
         #self.runMethod("ContextPy:Method:Layer", self.withLayer)
         # self.runMethodWithLayers("ContextPy:Method:Layer:1", l01)
@@ -442,6 +484,10 @@ class ContextPyMethodBench2(object):
         # self.runMethodWithLayers("ContextPy:Method:Layer:12", l01,l02,l03,l04,l05,l06,l07,l08,l09,l10,l11,l12)
         # self.runMethodWithLayers("ContextPy:Method:Layer:13", l01,l02,l03,l04,l05,l06,l07,l08,l09,l10,l11,l12,l13)
         # self.runMethodWithLayers("ContextPy:Method:Layer:14", l01,l02,l03,l04,l05,l06,l07,l08,l09,l10,l11,l12,l13,l14)
+
+        else:
+            print "can't handle this arg: %s" % arg
+            exit(2)
 
         # print "End Method Benchmark"
         gc.enable()
@@ -656,7 +702,7 @@ class ContextPyLayerActivationBench(object):
             consumedTime = timer.readTimer()
             timer.addOpsToTimer(16*size)
             size *= 2
-        print "%s\t%s" % label, timer.printPerfTimer()
+        print "%s\t%s" % (label, timer.printPerfTimer())
 
     def runMethodWithLayers(self, label, *layers):
         timer = Timer()
@@ -679,7 +725,7 @@ class ContextPyLayerActivationBench(object):
             consumedTime = timer.readTimer()
             timer.addOpsToTimer(16*size)
             size *= 2
-        print "%s\t%s" % label, timer.printPerfTimer()
+        print "%s\t%s" % (label, timer.printPerfTimer())
 
     def runMethodWithNestedLayers1(self, label):
         timer = Timer()
@@ -702,7 +748,7 @@ class ContextPyLayerActivationBench(object):
             consumedTime = timer.readTimer()
             timer.addOpsToTimer(16*size)
             size *= 2
-        print "%s\t%s" % label, timer.printPerfTimer()
+        print "%s\t%s" % (label, timer.printPerfTimer())
 
     def runMethodWithNestedLayers2(self, label):
         timer = Timer()
@@ -726,7 +772,7 @@ class ContextPyLayerActivationBench(object):
             consumedTime = timer.readTimer()
             timer.addOpsToTimer(16*size)
             size *= 2
-        print "%s\t%s" % label, timer.printPerfTimer()
+        print "%s\t%s" % (label, timer.printPerfTimer())
 
     def runMethodWithNestedLayers3(self, label):
         timer = Timer()
@@ -751,7 +797,7 @@ class ContextPyLayerActivationBench(object):
             consumedTime = timer.readTimer()
             timer.addOpsToTimer(16*size)
             size *= 2
-        print "%s\t%s" % label, timer.printPerfTimer()
+        print "%s\t%s" % (label, timer.printPerfTimer())
 
     def runMethodWithNestedLayers4(self, label):
         timer = Timer()
@@ -777,7 +823,7 @@ class ContextPyLayerActivationBench(object):
             consumedTime = timer.readTimer()
             timer.addOpsToTimer(16*size)
             size *= 2
-        print "%s\t%s" % label, timer.printPerfTimer()
+        print "%s\t%s" % (label, timer.printPerfTimer())
 
     def runMethodWithNestedLayers5(self, label):
         timer = Timer()
@@ -804,9 +850,9 @@ class ContextPyLayerActivationBench(object):
             consumedTime = timer.readTimer()
             timer.addOpsToTimer(16*size)
             size *= 2
-        print "%s\t%s" % label, timer.printPerfTimer()
+        print "%s\t%s" % (label, timer.printPerfTimer())
 
-    def run(self):
+    def run(self,num_layers,arg):
         gc.disable()
         # print "Start WITH Benchmark"
         # self.runReferenceNoCOP("ContextPy:Normal")
@@ -823,20 +869,45 @@ class ContextPyLayerActivationBench(object):
         # self.runMethodWithNestedLayers4("ContextPy:WithNested:Layer:4")
         # self.runMethodWithNestedLayers5("ContextPy:WithNested:Layer:5")
 
-        self.runReference("ContextPy:ActivateLayerFlat:0")
+        if arg == 'flat':
+            if False: pass
+            elif num_layers == 0:
+                self.runReference("ContextPy:ActivateLayerFlat:0")
+            elif num_layers == 1:
+                self.runMethodWithLayers("ContextPy:ActivateLayerFlat:1", l01)
+            elif num_layers == 2:
+                self.runMethodWithLayers("ContextPy:ActivateLayerFlat:2", l01,l02)
+            elif num_layers == 3:
+                self.runMethodWithLayers("ContextPy:ActivateLayerFlat:3", l01,l02,l03)
+            elif num_layers == 4:
+                self.runMethodWithLayers("ContextPy:ActivateLayerFlat:4", l01,l02,l03,l04)
+            elif num_layers == 5:
+                self.runMethodWithLayers("ContextPy:ActivateLayerFlat:5", l01,l02,l03,l04,l05)
+            else:
+                print "too many layers %d for %s" % (num_layers, arg)
+                exit(3)
 
-        self.runMethodWithLayers("ContextPy:ActivateLayerFlat:1", l01)
-        self.runMethodWithLayers("ContextPy:ActivateLayerFlat:2", l01,l02)
-        self.runMethodWithLayers("ContextPy:ActivateLayerFlat:3", l01,l02,l03)
-        self.runMethodWithLayers("ContextPy:ActivateLayerFlat:4", l01,l02,l03,l04)
-        self.runMethodWithLayers("ContextPy:ActivateLayerFlat:5", l01,l02,l03,l04,l05)
+        elif arg == 'nested':
+            if False: pass
+            elif num_layers == 0:
+                self.runReference("ContextPy:ActivateLayer:0")
+            elif num_layers == 1:
+                self.runMethodWithNestedLayers1("ContextPy:ActivateLayer:1")
+            elif num_layers == 2:
+                self.runMethodWithNestedLayers2("ContextPy:ActivateLayer:2")
+            elif num_layers == 3:
+                self.runMethodWithNestedLayers3("ContextPy:ActivateLayer:3")
+            elif num_layers == 4:
+                self.runMethodWithNestedLayers4("ContextPy:ActivateLayer:4")
+            elif num_layers == 5:
+                self.runMethodWithNestedLayers5("ContextPy:ActivateLayer:5")
+            else:
+                print "too many layers %d for %s" % (num_layers, arg)
+                exit(3)
 
-        self.runReference("ContextPy:ActivateLayer:0")
-        self.runMethodWithNestedLayers1("ContextPy:ActivateLayer:1")
-        self.runMethodWithNestedLayers2("ContextPy:ActivateLayer:2")
-        self.runMethodWithNestedLayers3("ContextPy:ActivateLayer:3")
-        self.runMethodWithNestedLayers4("ContextPy:ActivateLayer:4")
-        self.runMethodWithNestedLayers5("ContextPy:ActivateLayer:5")
+        else:
+            print "can't handle this arg: %s" % arg
+            exit(2)
 
         # print "End WITH Benchmark"
         gc.enable()
@@ -869,9 +940,31 @@ class Timer(object):
 
 
 if __name__ == "__main__":
-    # import sys
-    # if not (len(sys.argv) > 1 and  sys.argv[1] == 'activation'):
-    print "name	ops	time	ops/time"
-    ContextPyMethodBench2().run()
-    # else:
-    ContextPyLayerActivationBench().run()
+    import sys
+    if not (len(sys.argv) > 2):
+        print "no can do, need more info"
+        print """
+
+        contextpyBenchmark.py {activation|runtime} num_layers arg
+
+            activation  run activation bench
+            runtime     run runtime bench
+
+            num_layers  number of layers to bench for
+            arg         for activation:
+                            flat        flat activation
+                            nested      nested activation
+                        for runtime:
+                            standard    run without any layer ideas whatsoever
+                            nolayer     run *without* any layer *activated*
+                            layer       run *with* num_layers *activated*
+        """
+        exit(1)
+    activation_or_runtime = sys.argv[1] == 'activation' # or runtime
+    num_layers = int(sys.argv[2]) #
+    arg = sys.argv[3]
+
+    if activation_or_runtime:
+        ContextPyLayerActivationBench().run(num_layers, arg)
+    else:
+        ContextPyMethodBench2().run(num_layers, arg)
