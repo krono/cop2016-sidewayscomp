@@ -129,6 +129,23 @@ facilities, albeit using less code and a simplified architecture.
 
 \section{<<Solution: Sideways-composition and metatracing>>}
 
+We propose that meta-tracing \ac{jit} compilers can reduce the overhead of
+sideways composition and \ac{cop}.
+
+\Acl{cop} employs sideways composition to inject context-dependent behavioral
+changes into an existing hierarchy of behavior. These hierarchies are typically
+defined by the static and/or single inheritance of object systems. These
+hierarchies are typically important for execution time performance, as they
+form the data base for \emph{lookup}.
+
+Most execution environments, such as \acp{vm} for dynamic object-oriented
+languages, assume that those hierarchies change rarely and hence lookup can be
+fast. However, using sideways composition to alter behavior invalidates this
+assumption. Especially, since \ac{cop} explicitly redefines lookup based on
+currently active layers.
+
+
+
 
 
 \section{<<Impl: ContextPy, VM interface, applevel promote>>}
