@@ -55,6 +55,23 @@
 }
 
 
+\usepackage[final]{listings}
+% Code listings
+\lstset{%
+  basicstyle=\small\ttfamily,
+  % keywordstyle=\footnotesize\ttfamily,
+  % commentstyle=\footnotesize\ttfamily,
+  columns=fullflexible,
+  captionpos=t,
+  floatplacement=htbp,
+  escapechar=§,
+  showstringspaces=false,
+  numbers=left, numberstyle=\tiny\color{black!33},numbersep=5pt}
+% \AtBeginDocument{
+%   \lstMakeShortInline[language=Python]!
+%   \lstMakeShortInline[language=Scheme]|
+% }
+
 % hack
 \let\bibfont\relax
 \usepackage[backend=biber,natbib=true,style=numeric]{biblatex}
