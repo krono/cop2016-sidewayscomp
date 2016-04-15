@@ -163,15 +163,16 @@ p <- ggplot(data=bench.summary.graph,
   theme(
     axis.text.x  = element_text(size=6, angle=0, hjust=0.5),
     legend.position=c(0.75, .8),
-    plot.margin = unit(c(0,0,-3,-0.5),"mm")) +
+    plot.margin = unit(c(.2,0,-2,-0.5),"mm")) +
 #   geom_bar(stat="identity", position=dodge, width=.6, aes(fill = vm))+
   geom_bar(stat="identity", position=dodge, width=.6, aes(fill = benchmark))+
 #   geom_point(position=dodge,aes(y=0.15, ymax=ymax, shape=vm),size=2, color="grey90",stat="identity") +
-#   geom_point(position=dodge,aes(y=0.15, ymax=ymax, shape=benchmark),size=2, color="grey90",stat="identity") +
+  geom_point(position=dodge,aes(y=1, ymax=ymax, shape=benchmark),size=2, color="grey90",stat="identity") +
   ylab("Absolute Runtime in seconds") +
-  scale_y_continuous(breaks=seq(0,ymax,5), limits=c(0,ymax),expand=c(0,0)) +
-  scale_fill_brewer(name = "Virtual Machine", type="qual", palette="Set1", guide="none") 
-  scale_shape(name = "Virtual Machine", solid = FALSE) 
+  scale_y_continuous(breaks=seq(0,ymax,2), limits=c(0,ymax),expand=c(0,0)) +
+  scale_fill_manual(name = "Benchmark", values = c("blue","violet", "red")) +
+#   scale_fill_brewer(name = "Benchmark", type="qual", palette="Set1") +
+  scale_shape(name = "Benchmark", solid = FALSE) 
 # +
 #   facet_grid(. ~ overall, scales="free", space="free",labeller=label_bquote(""))
 if (rigorous) {
@@ -188,7 +189,7 @@ embed_fonts(gg.file, options=pdf.embed.options)
 
 (function() {
 # -------------------------------- Normal -----------------------------------------
-ymax <- round_any(max(bench.summary.graph$mean.norm, na.rm=TRUE), 0.5, ceiling)
+ymax <- round_any(max(bench.summary.graph$mean.norm, na.rm=TRUE), 0.25, ceiling)
 p <- ggplot(data=bench.summary.graph,
             #        aes(x=benchmark,y=mean.norm,group=interaction(benchmark,vm),fill=vm,)
             aes(x=vm,y=mean.norm,group=interaction(vm,benchmark),fill=benchmark,)
@@ -196,15 +197,16 @@ p <- ggplot(data=bench.summary.graph,
   theme(
     axis.text.x  = element_text(size=6, angle=0, hjust=0.5),
     legend.position=c(0.75, .8),
-    plot.margin = unit(c(0,0,-3,-0.5),"mm")) +
+    plot.margin = unit(c(0,0,-2,-0.5),"mm")) +
   #   geom_bar(stat="identity", position=dodge, width=.6, aes(fill = vm))+
   geom_bar(stat="identity", position=dodge, width=.6, aes(fill = benchmark))+
   #   geom_point(position=dodge,aes(y=0.15, ymax=ymax, shape=vm),size=2, color="grey90",stat="identity") +
   geom_point(position=dodge,aes(y=0.15, ymax=ymax, shape=benchmark),size=2, color="grey90",stat="identity") +
   ylab("Relative Runtime") +
-  scale_y_continuous(breaks=seq(0,ymax,1), limits=c(0,ymax),expand=c(0,0)) +
-  scale_fill_brewer(name = "Virtual Machine", type="qual", palette="Set1", guide="none")+
-  scale_shape(name = "Virtual Machine", solid = FALSE) 
+  scale_y_continuous(breaks=seq(0,ymax,.5), limits=c(0,ymax),expand=c(0,0)) +
+  scale_fill_manual(name = "Benchmark", values = c("blue","violet", "red")) +
+  #   scale_fill_brewer(name = "Benchmark", type="qual", palette="Set1") +
+  scale_shape(name = "Benchmark", solid = FALSE) 
 # +
 #   facet_grid(. ~ overall, scales="free", space="free",labeller=label_bquote(""))
 if (rigorous) {
