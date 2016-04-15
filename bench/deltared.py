@@ -748,9 +748,11 @@ def entry_point(iterations):
     startTime = time.time()
 
     if layered:
+        globalActivateLayer(Counting)
         with activelayers(Reverse):
             chain_test(iterations)
             projection_test(iterations)
+        globalDeactivateLayer(Counting)
     else:
         chain_test(iterations)
         projection_test(iterations)
@@ -758,10 +760,12 @@ def entry_point(iterations):
     endTime = time.time()
     return startTime, endTime
 
-@around(Counting)
-def entry_point(iterations):
+@before(Counting)
+def chain_test(iterations):
     Constraint.reset_counter()
-    __result__ = proceed(iterations)
+
+@after(Counting)
+def projection_test(iterations, __result__):
     print('>> Constraints:', Constraint.counter_value(), file=sys.stderr)
     return __result__
 
@@ -774,8 +778,6 @@ if __name__ == '__main__':
     layered = bool(int(sys.argv[4]))
     bench = 'DeltaRed' if layered else 'DeltaViolet'
 
-    if layered:
-        globalActivateLayer(Counting)
 
     for i in xrange(warmUp):
         startTime, endTime = entry_point(innerIter)
