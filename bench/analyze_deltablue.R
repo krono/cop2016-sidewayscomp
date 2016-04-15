@@ -24,8 +24,10 @@ tsv_names.default <- c('python', 'pypy', 'pypypromote')
 if (FALSE) {
   setwd("~/Documents/Uni/Paper/cop2016-sidewayscomp/bench")
   cmd.line <- FALSE
+  tsv_names <- tsv_names.default
 } else {
   cmd.line <- TRUE
+  tsv_names <- tsv_names.cmd.line(tsv_names.default)
 }
 
 pkgs = c(
@@ -46,7 +48,7 @@ source("./help.R")
 bench <- data.frame()
 for (vm in tsv_names) {
   tsv_name <- last(vm)
-  vm_bench <- read.delim(tsv_name, comment.char = "#", header=TRUE,
+  vm_bench <- read.delim(paste0('deltablue-contextpy-osx-',tsv_name,'.tsv'), comment.char = "#", header=TRUE,
                         col.names=c('benchmark', 'iter', 'value'))
   vm_bench$vm <- first(capitalize(vm))
   bench <- rbind(bench, vm_bench)}
@@ -146,12 +148,12 @@ write.xlsx(bench.tot, paste0(input.basename, ".xlsx"), append=FALSE, sheetName="
 write.xlsx(bench.summary, paste0(input.basename, ".xlsx"), append=TRUE, sheetName="summary")
 
 dodge <- position_dodge(width=.75)
-ymax <- round_any(max(bench.summary.graph$mean.norm, na.rm=TRUE), 0.5, ceiling)
+ymax <- round_any(max(bench.summary.graph$mean, na.rm=TRUE), 0.5, ceiling)
 
 # -------------------------------- Normal -----------------------------------------
 p <- ggplot(data=bench.summary.graph,
 #        aes(x=benchmark,y=mean.norm,group=interaction(benchmark,vm),fill=vm,)
-       aes(x=vm,y=mean.norm,group=interaction(vm,benchmark),fill=benchmark,)
+       aes(x=vm,y=mean,group=interaction(vm,benchmark),fill=benchmark,)
 ) + default.theme() +
 #   geom_bar(stat="identity", position=dodge, width=.6, aes(fill = vm))+
   geom_bar(stat="identity", position=dodge, width=.6, aes(fill = benchmark))+
@@ -168,10 +170,35 @@ if (rigorous) {
 
 p
 
-gg.file <- paste0(input.basename, "-norm.pdf")
+gg.file <- paste0(input.basename, ".pdf")
 ggsave(gg.file, width=figure.width * ratio, height=figure.height, units=c("in"), colormodel='rgb', useDingbats=FALSE)
 embed_fonts(gg.file, options=pdf.embed.options)
 
+
+# -------------------------------- Normal -----------------------------------------
+ymax <- round_any(max(bench.summary.graph$mean.norm, na.rm=TRUE), 0.5, ceiling)
+p <- ggplot(data=bench.summary.graph,
+            #        aes(x=benchmark,y=mean.norm,group=interaction(benchmark,vm),fill=vm,)
+            aes(x=vm,y=mean.norm,group=interaction(vm,benchmark),fill=benchmark,)
+) + default.theme() +
+  #   geom_bar(stat="identity", position=dodge, width=.6, aes(fill = vm))+
+  geom_bar(stat="identity", position=dodge, width=.6, aes(fill = benchmark))+
+  #   geom_point(position=dodge,aes(y=0.15, ymax=ymax, shape=vm),size=2, color="grey90",stat="identity") +
+  geom_point(position=dodge,aes(y=0.15, ymax=ymax, shape=benchmark),size=2, color="grey90",stat="identity") +
+  ylab("Relative Runtime") +
+  scale_y_continuous(breaks=seq(0,ymax,1), limits=c(0,ymax),expand=c(0,0)) +
+  scale_fill_brewer(name = "Virtual Machine", type="qual", palette="Set1", guide="none") 
+# +
+#   facet_grid(. ~ overall, scales="free", space="free",labeller=label_bquote(""))
+if (rigorous) {
+  p <- p + geom_errorbar(aes(ymin=lower, ymax = upper),  position=dodge, color=I("black"), size=.2)  
+}
+
+p
+
+gg.file <- paste0(input.basename, "-norm.pdf")
+ggsave(gg.file, width=figure.width * ratio, height=figure.height, units=c("in"), colormodel='rgb', useDingbats=FALSE)
+embed_fonts(gg.file, options=pdf.embed.options)
 
 if (rigorous) {
   # LaTeX table, all
