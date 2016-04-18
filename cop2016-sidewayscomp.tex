@@ -52,29 +52,29 @@
 \maketitle
 
 \begin{abstract}
-  \begin{itemize}
-  \item Typical object systems only support static, single inheritance, both
-    are limiting.
-  \item Sideways composition provides a way of reducing their limitations.
-  \item COP notably applies SC for good modularity.
-  \item Most COP implementations have a substantial performance overhead.
-  \item This is because weaving and execution of layered methods violate common
-    assumptions about lookup.
-  \item Meta-tracing JITs have unique characteristics that can alleviate the
-    performance overhead.
-  \item They don't need to make as strong assumptions as traditional execution
-    environments have to.
-  \item We postulate that MT-JITs are good at optimizing sideways composition
-    and give initial results.
-  \item We show that hints for the JIT compiler in the COP implementation can
-    improve performance further.
-  \end{itemize}
-\end{abstract}
+  The prevalent way of code sharing in most of the current object systems is
+  static and/or single inheritance, both are limiting. Sideways composition
+  provides a technique to reduce their limitations. \Ac{cop} notably applies
+  sideways composition to achieve better modularity. However, most \ac{cop}
+  implementations have a substantial performance overhead. This is partly
+  because weaving and execution of layered methods violate common assumptions
+  about lookup. Meta-tracing \ac{jit} compiler have unique characteristics that
+  can alleviate the performance overhead, as they can treat lookup
+  differently.\\
+  We suggest that meta-tracing \ac{jit} compilers are good at optimizing
+  sideways composition and give initial results. Furthermore, we show that
+  hints for the \ac{jit} compiler in a \ac{cop} implementation can improve
+  performance further.
+  \end{abstract}
 
 \category{CR-number}{subcategory}{third-level}
 
 \keywords
-keyword1, keyword2
+context-oriented programming,
+meta-tracing \acs{jit} compilers,
+optimization,
+virtual machines,
+PyPy
 
 \section{Introduction}
 
