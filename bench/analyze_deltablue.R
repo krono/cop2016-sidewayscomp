@@ -20,6 +20,7 @@ input.basename <- 'DeltaBlue'
 
 tsv_names.default <- c('python', 'pypy', 'pypypromote')
 
+
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 if (FALSE) {
   setwd("~/Documents/Uni/Paper/cop2016-sidewayscomp/bench")
@@ -58,6 +59,10 @@ bench <- (function () {
 
 # bench <- droplevels(bench[bench$criterion != 'gc',,])
 bench$vm <- factor(bench$vm, levels = sapply(sapply(tsv_names, first), capitalize))  
+bench$vm <- factor(bench$vm, levels = c('Python', 'PyPy', 'ContextPyPy'))  
+
+levels(bench$vm) <- c('Python', 'PyPy', 'ContextPyPy')
+
 bench$benchmark <- factor(bench$benchmark, levels = c('DeltaBlue','DeltaViolet','DeltaRed')) 
 
 # --- shaping data
@@ -141,8 +146,19 @@ bench.summary.sel <- dcast(melt(bench.summary[sel.col], id.vars=group.by), bench
 # bench.summary.sel <- dcast(melt(bench.summary[sel.col], id.vars=group.by), vm ~ benchmark + variable)
 bench.summary.ltx <- bench.summary.sel[2:length(bench.summary.sel)]
 # rownames(bench.summary.ltx) <- bench.summary.sel$benchmark
-rownames(bench.summary.ltx) <- bench.summary.sel$vm
-colnames(bench.summary.ltx) <- sapply(colnames(bench.summary.ltx), function(x) {sedit(x, '_', ' ')})
+# # rownames(bench.summary.ltx) <- bench.summary.sel$vm
+# colnames(bench.summary.ltx) <- sapply(colnames(bench.summary.ltx), function(x) {sedit(x, '_', ' ')})
+# rownames(bench.summary.ltx) <- bench.summary.sel$vm
+.fmt <- function(x) {
+  format(round(x / 1e3), nsmall=0,justify=c("left"),width=0)
+}
+bench.summary.ltx <- data.frame(
+  Python = paste(.fmt(bench.summary.sel$Python_mean), .fmt(bench.summary.sel$Python_err095), sep = ' +- '),
+  PyPy = paste(.fmt(bench.summary.sel$PyPy_mean), .fmt(bench.summary.sel$PyPy_err095), sep = ' +- '),
+  ContextPyPy = paste(.fmt(bench.summary.sel$ContextPyPy_mean), .fmt(bench.summary.sel$ContextPyPy_err095), sep = ' +- ')
+)
+rownames(bench.summary.ltx) <- bench.summary.sel$benchmark
+
 
 # ----- Outputting -----
 
@@ -224,44 +240,15 @@ if (rigorous) {
   # LaTeX table, all
   (function() {
     if (nrow(bench.summary.ltx) <= 0) return()
-    len <- ncol(bench.summary.ltx)/2
-    .just = rep(c('r','@{}>{\\smaller\\ensuremath{\\pm}}r@{\\,\\si{\\milli\\second}}'), len)
-    .just = c('@{}r', .just[2:length(.just)])
-    out <- latex(bench.summary.ltx,
-                 file=paste0(input.basename, "-all.tex"),
-                 rowlabel="Benchmark",
-                 caption="All Shootout benchmarks results",
-                 lines.page=999999,
-                 booktabs=TRUE,
-                 center="none",
-                 longtable=TRUE,
-                 size="small", #center="centering",
-                 colheads=rep(c('mean', ''), len),
-                 col.just=.just,
-                 #col.just=rep(c('r','@{\\,\\si{\\milli\\second} \\ensuremath{\\pm}}r'), len),
-                 cgroup=levels(as.factor(bench.summary$vm)),
-                 cdec=rep(0, len*2))
-  })()
-  # LaTeX table, all
-  (function() {
-    if (nrow(bench.summary.ltx) <= 0) return()
-    len <- ncol(bench.summary.ltx)/2
-    .just = rep(c('r','@{}>{\\smaller\\ensuremath{\\pm}}r@{\\,\\si{\\milli\\second}}'), len)
-    .just = c('@{}r', .just[2:length(.just)])
-    out <- latex(bench.summary.ltx,
-                 file=paste0(input.basename, "-all.tex"),
-                 rowlabel="Benchmark",
-                 caption="All Shootout benchmarks results",
-                 lines.page=999999,
-                 booktabs=TRUE,
-                 center="none",
-                 longtable=TRUE,
-                 size="small", #center="centering",
-                 colheads=rep(c('mean', ''), len),
-                 col.just=.just,
-                 #col.just=rep(c('r','@{\\,\\si{\\milli\\second} \\ensuremath{\\pm}}r'), len),
-                 cgroup=levels(as.factor(bench.summary$vm)),
-                 cdec=rep(0, len*2))
+    file <- paste0(input.basename, "-all.tex")
+#     cat("\\toprule\n", file=file)
+#     cat("\\multicolumn{1}{c}{Benchmark} & \\multicolumn{1}{c}{", file=file, append=TRUE)
+#     cat(paste0(colnames(bench.summary.ltx),collapse="} & \\multicolumn{1}{c}{"), file=file, append = TRUE)
+#     cat("} \\\\\n",file=file, append = TRUE)
+#     cat("\\midrule\n", file=file, append=TRUE)
+#     write.table(bench.summary.ltx, file=file, append=TRUE, sep=" & ", quote=FALSE, eol=" \\\\\n", col.names=FALSE)
+#     cat("\\bottomrule\n", file=file, append=TRUE)
+    write.table(bench.summary.ltx, file=file, sep=" & ", quote=FALSE, eol=" \\\\\n", col.names=FALSE)
   })()
 } else {
   stop('Stop and go back!.')

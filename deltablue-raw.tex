@@ -1,0 +1,22 @@
+\begin{table}
+  \centering
+  \caption{DeltaBlue raw numbers}
+  \label{tab:deltablue-raw}
+  \sisetup{
+    % table-number-alignment = center, 
+    separate-uncertainty = true}
+  \begin{tabular}{lSSS}
+    \toprule
+    \multicolumn{1}{c}{Benchmark} & \multicolumn{1}{c}{Python} & \multicolumn{1}{c}{PyPy} & \multicolumn{1}{c}{ContextPyPy} \\
+    \midrule
+    % \input{bench/DeltaBlue-all}
+DeltaBlue & 12018 +-  68 & 4049 +- 149 & 3483 +- 189 \\
+DeltaViolet & 28279 +- 210 & 4372 +- 350 & 3676 +- 282 \\
+DeltaRed & 37803 +- 488 & 5163 +- 357 & 4906 +- 292 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "cop2016-sidewayscomp"
+%%% End:
