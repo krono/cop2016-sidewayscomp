@@ -1,12 +1,12 @@
 %
-\clearpage
+\clearpage\onecolumn
 \begingroup
 \newcolumntype{B}{S[table-auto-round = true,exponent-product=\cdot,scientific-notation=true,table-figures-decimal=2,table-figures-integer=2,table-figures-exponent=1]}
 \newcolumntype{T}{S[table-auto-round = true,table-format=2.2]}
-% \rotFPtop=0pt plus 1fil
-\rotFPtop=0pt
-\rotFPbot=0pt plus 1fil
-\begin{sidewaystable}[p]
+% % \rotFPtop=0pt plus 1fil
+% \rotFPtop=0pt
+% \rotFPbot=0pt plus 1fil
+\begin{sidewaystable}
 \centering
 % \begin{table}
 \caption{Raw numbers for the comparison benchmarks. \emph{ops} is number of
@@ -71,6 +71,9 @@ B@{}T@{}B
 \end{sidewaystable}
 \endgroup
 \clearpage
+
+\input{malte-a-overview}
+
 \begingroup
 \newcolumntype{P}{S[table-format=3.2]<{{\,\si{\percent}}}}
 \begin{table*}

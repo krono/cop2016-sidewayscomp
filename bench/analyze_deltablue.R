@@ -242,26 +242,29 @@ if (rigorous) {
                  cgroup=levels(as.factor(bench.summary$vm)),
                  cdec=rep(0, len*2))
   })()
-  
-} else {
   # LaTeX table, all
   (function() {
     if (nrow(bench.summary.ltx) <= 0) return()
-    colnames(bench.summary.ltx) <- gsub(' mean', '', colnames(bench.summary.ltx))  
-    len <- ncol(bench.summary.ltx)
-    .just = rep('@{}r', len)
-    .long <- nrow(bench.summary.ltx) > 50
+    len <- ncol(bench.summary.ltx)/2
+    .just = rep(c('r','@{}>{\\smaller\\ensuremath{\\pm}}r@{\\,\\si{\\milli\\second}}'), len)
+    .just = c('@{}r', .just[2:length(.just)])
     out <- latex(bench.summary.ltx,
                  file=paste0(input.basename, "-all.tex"),
                  rowlabel="Benchmark",
-                 booktabs=TRUE,
+                 caption="All Shootout benchmarks results",
                  lines.page=999999,
-                 table.env=(! .long), center="none",
-                 longtable=.long,
+                 booktabs=TRUE,
+                 center="none",
+                 longtable=TRUE,
                  size="small", #center="centering",
+                 colheads=rep(c('mean', ''), len),
                  col.just=.just,
-                 cdec=rep(0, len))
+                 #col.just=rep(c('r','@{\\,\\si{\\milli\\second} \\ensuremath{\\pm}}r'), len),
+                 cgroup=levels(as.factor(bench.summary$vm)),
+                 cdec=rep(0, len*2))
   })()
+} else {
+  stop('Stop and go back!.')
 }
 
 bench.info <- bench.summary.graph[bench.summary.graph$overall == FALSE,,] 
