@@ -67,7 +67,9 @@
   performance further.
   \end{abstract}
 
-\category{CR-number}{subcategory}{third-level}
+\category{D.3.3}{Programming Languages}{Language Constructs and Features}
+\category{D.3.2}{Programming Languages}{Language Classifications}[Mul\-ti\-par\-a\-digm languages]
+\category{D.3.4}{Programming Languages}{Processors}[Run-time environments]
 
 \keywords
 context-oriented programming,
@@ -97,7 +99,9 @@ motivation for dynamically adapting systems based on environmental factors such
 as battery level, geolocation, or time of day~\todo{cite}, \ac{cop} has also
 been applied to provide safety in the development of live
 systems~\cite{lincke+:2012:scoping-changes} or to let multiple conflicting
-versions of programming interfaces co-exist~\todo{cite my talk cop 2013}. 
+versions of programming interfaces co-exist~\todo{cite my talk cop 2013}.
+
+~\cite{lincke+:2011:implementing-scoped}
 
 However, as with many abstraction mechanisms, \ac{cop} comes with some overhead,
 a fact that has been repeatedly recognized. Context layer aware method lookup
@@ -106,7 +110,7 @@ languages use the host languages meta-programming facilities to redirect method
 dispatch, whereas statically compiled languages require additional compilation
 steps to construct data structures to track layer activation states at
 run-time. Both of these solutions come with considerable performance decrease
-from 75 \% up to 99 \%~\cite{appeltauer+:2009:comparison-context-oriented}.
+from \SIrange{75}{99}\percent~\cite{appeltauer+:2009:comparison-context-oriented}.
 
 So far, attempts to apply traditional compiler and optimization techniques have
 proven to be difficult and can only reduce the performance overhead in some
@@ -279,12 +283,12 @@ All benchmarks are single-threaded.
 
 
 \paragraph{Implementations} %
-~\idBox{377EB8}{\(\circ\)}, %
-~\idBox{4DAF4A}{\(\bigtriangleup\)}, %
-~\idBox{984EA3}{\(\square\)}, %
-~\idBox{FF7F00}{\(+\)}, %
-~\idBox{FF7F00}{\(\boxtimes\)}, %
-~\idBox{E41A1C}{\(\)}, %
+% ~\idBox{377EB8}{\(\circ\)}, %
+% ~\idBox{4DAF4A}{\(\bigtriangleup\)}, %
+% ~\idBox{984EA3}{\(\square\)}, %
+% ~\idBox{FF7F00}{\(+\)}, %
+% ~\idBox{FF7F00}{\(\boxtimes\)}, %
+% ~\idBox{E41A1C}{\(\)}, %
 
 <<DeltaBlue/Violet/Red>>
 \begin{itemize}
@@ -305,7 +309,7 @@ and additionally for <<maltebench>>
 % INITSIZE = 200000
 % MAXSIZE = 1000000000
 % TARGETTIME = 5.0 * 1000
-For <<maltebench>>, every benchmark was with increasing size until a
+For <<maltebench>>, every benchmark was run with increasing size until a
 measurement took at least 5 seconds; this matches the original
 methodology~\cite{appeltauer+:2009:comparison-context-oriented}.Warm-up is
 provided by the not measured runs.
