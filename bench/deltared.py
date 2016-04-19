@@ -28,6 +28,9 @@ Reverse = layer("Reverse")
 ReversePlan = layer("ReversePlan")
 Counting = layer("Counting")
 
+LayerCounting = layer("LayerCounting")
+layerActive_Counting = False
+
 # The JS variant implements "OrderedCollection", which basically completely
 # overlaps with ``list``. So we'll cheat. :D
 class OrderedCollection(list):
@@ -164,6 +167,16 @@ class Constraint(object):
     def execute(self, __result__):
         Constraint.__count += 1
         return __result__
+
+    @before(LayerCounting)
+    def execute(self):
+        global layerActive_Counting
+        if layerActive_Counting:
+            globalDeactivateLayer(Counting)
+            layerActive_Counting = False
+        else:
+            globalActivateLayer(Counting)
+            layerActive_Counting = True
 
 class UnaryConstraint(Constraint):
     def __init__(self, v, strength):
@@ -734,10 +747,12 @@ def change(v, new_value):
 # In spirit of the original, we'll keep it, but ugh.
 planner = None
 
+def chain_and_projection_test(iterations):
+    chain_test(iterations)
+    projection_test(iterations)
 
 def delta_blue():
-    chain_test(100)
-    projection_test(100)
+    chain_and_projection_test(100)
 
 import time
 
@@ -745,28 +760,30 @@ layered = False
 
 def entry_point(iterations):
     global layered
+    global layerActive_Counting
     startTime = time.time()
 
     if layered:
         globalActivateLayer(Counting)
-        with activelayers(Reverse):
-            chain_test(iterations)
-            projection_test(iterations)
-        globalDeactivateLayer(Counting)
+        layerActive_Counting = True
+        with activelayers(Reverse, LayerCounting):
+            chain_and_projection_test(iterations)
+        if layerActive_Counting:
+            globalDeactivateLayer(Counting)
+            layerActive_Counting = False
     else:
-        chain_test(iterations)
-        projection_test(iterations)
+        chain_and_projection_test(iterations)
 
     endTime = time.time()
     return startTime, endTime
 
-@before(Counting)
-def chain_test(iterations):
-    Constraint.reset_counter()
-
-@after(Counting)
-def projection_test(iterations, __result__):
-    print('>> Constraints:', Constraint.counter_value(), file=sys.stderr)
+@around(LayerCounting)
+def chain_and_projection_test(iterations):
+    with activelayers(Counting):
+        Constraint.reset_counter()
+    __result__ = proceed(iterations)
+    with activelayers(Counting):
+        print('>> Constraints executed:', Constraint.counter_value(), file=sys.stderr)
     return __result__
 
 if __name__ == '__main__':
@@ -778,7 +795,6 @@ if __name__ == '__main__':
     layered = bool(int(sys.argv[4]))
     bench = 'DeltaRed' if layered else 'DeltaViolet'
 
-
     for i in xrange(warmUp):
         startTime, endTime = entry_point(innerIter)
 
@@ -787,4 +803,3 @@ if __name__ == '__main__':
         startTime, endTime = entry_point(innerIter)
         microseconds = int((endTime - startTime) * 1000 * 1000)
         print("%s\t1\t%d" % (bench, microseconds))
-
