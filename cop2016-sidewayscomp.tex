@@ -331,17 +331,66 @@ for a \SI{95}{\percent} confidence level.
 
 \subsection{Benchmarks}
 
+Our first set of benchmarks is taken from one of our earlier
+papers~\cite{appeltauer+:2009:comparison-context-oriented}. These
+micro-benchmarks attempt to measure the pure performance overhead of dispatching
+to active layers and of layer activation.
+
+In the first of these benchmarks, we use an object with ten integer variables
+(\texttt{counter$_1$} to \texttt{counter$_{10}$}) that provides ten methods
+(\texttt{method$_1$} to \texttt{method$_{10}$}), where each \texttt{method$_i$}
+increments all counters from \texttt{counter$_1$} to \texttt{counter$_i$} by
+one. The same behavior is provided by a method \texttt{layered}. The base method
+increments only \texttt{counter$_1$}, and nine layers (\texttt{Layer$_2$} to
+\texttt{Layer$_{10}$}) provide a partial method to adapt the base method to each
+increment one of the other counters. Running just the \texttt{layered} method
+without any layers being active thus yields the same behavior as
+\texttt{method$_1$}.
+
+The results of this benchmark are shown in \autoref{fig:malte-a}. We evaluated
+the performance by comparing each ordinary method \texttt{method$_i$} with the
+execution performance of activating all layers from \texttt{Layer$_2$} to
+\texttt{Layer$_i$} (which gives the same behavior) and normalizing to the
+ordinary method. As we reported in our previous work, ContextL shows a
+performance degradation ranging from 22\% to 65\%. Interestingly, the decrease
+in performance does not seem to correspond to the number of active layers,
+likely due to the variability of the optimizations of the underlying Lisp
+\ac{vm}. On the V8 and Chakra JavaScript \acp{vm}, ContextJS incurs a massive
+performance hit of over 99.7\% in all cases (even where no layer is
+active). ContextPy on the Python \ac{vm} is little better with overhead around
+95\%.
+
+% TODO ....
+Running ContextPy on the meta-tracing PyPy \ac{vm} ...
+
 \begin{figure*}[htb]
   \centering
   \includegraphics[height=5.5\baselineskip]{bench/malte-a/malte-a-3}
   \includegraphics[height=5.5\baselineskip]{bench/malte-a/malte-a-2}
   \includegraphics[height=5.5\baselineskip]{bench/malte-a/malte-a-4}
   \caption{Bench A}
+  \label{fig:malte-a}
 \end{figure*}
+
+In our second benchmark we measure the performance impact of layer
+activation. For most \ac{cop} languages, layer activation means updating
+internal data structures with the current layer composition. To quantify this
+impact, we measured the execution time of running five methods
+(\texttt{method$_1$} to \texttt{method$_5$}) in succession that each increment
+one counter. We compare this to the execution time of five partial methods from
+five layers that implement the same method body, where each layer is activated
+in succession.
+
+The results of this benchmark are shown in \autoref{fig:malte-b}. The
+performance impact for layer activation for each of the tested systems is
+comparable and clearly increases as more layers are activated. 
+% TODO ....
+
 \begin{figure*}[htb]
   \centering
   \includegraphics[width=\linewidth]{bench/malte-b}
   \caption{Bench B}
+  \label{fig:malte-b}
 \end{figure*}
 
 
