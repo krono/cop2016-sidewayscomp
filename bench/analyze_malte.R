@@ -15,14 +15,6 @@ input.basename <- 'CopSurvey'
 tsv_names.default <- list.files(pattern="malte-.*.tsv")
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-if (FALSE) {
-  setwd("~/Documents/Uni/Paper/cop2016-sidewayscomp/bench")
-  cmd.line <- FALSE
-  tsv_names <- tsv_names.default
-} else {
-  cmd.line <- TRUE
-  tsv_names <- tsv_names.cmd.line(tsv_names.default)
-}
 pkgs = c(
   "reshape2",
   "plyr",
@@ -35,6 +27,14 @@ pkgs = c(
   "dplyr"
 )
 source("./help.R")
+if (FALSE) {
+  setwd("~/Documents/Uni/Paper/cop2016-sidewayscomp/bench")
+  cmd.line <- FALSE
+  tsv_names <- tsv_names.default
+} else {
+  cmd.line <- TRUE
+  tsv_names <- tsv_names.cmd.line(tsv_names.default)
+}
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 

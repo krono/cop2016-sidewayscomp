@@ -802,4 +802,4 @@ if __name__ == '__main__':
     for i in xrange(numIterations):
         startTime, endTime = entry_point(innerIter)
         microseconds = int((endTime - startTime) * 1000 * 1000)
-        print("%s\t1\t%d" % (bench, microseconds))
+        print("%s\t%d" % (bench, microseconds))

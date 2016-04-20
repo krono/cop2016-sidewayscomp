@@ -32,11 +32,15 @@ __all__ += ['globalActivateLayer', 'globalDeactivateLayer']
 
 __version__ = "1.1"
 
-try:
-    from __pypy__ import _promote as promote
-except ImportError:
+import os
+if os.getenv('PYPY_NO_PROMOTE', False) in ['1', 'TRUE', 'yes', 'true', 'True', True]:
     promote = lambda x: x
-
+else:
+    try:
+        from __pypy__ import _promote as promote
+    except ImportError:
+        promote = lambda x: x
+del os
 
 
 class MyTLS(threading.local):

@@ -25,11 +25,9 @@ tsv_names.default <- c('python', 'pypy', 'pypypromote')
 if (FALSE) {
   setwd("~/Documents/Uni/Paper/cop2016-sidewayscomp/bench")
   cmd.line <- FALSE
-  tsv_names <- tsv_names.default
 } else {
   cmd.line <- TRUE
-  tsv_names <- tsv_names.cmd.line(tsv_names.default)
-}
+}   
 
 pkgs = c(
   "reshape2",
@@ -43,25 +41,35 @@ pkgs = c(
   "dplyr"
 )
 source("./help.R")
+
+if (FALSE) {
+  tsv_names <- tsv_names.default
+} else {
+  tsv_names <- tsv_names.cmd.line(tsv_names.default, check=FALSE)
+}
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
 bench <- (function () {
-  df <- data.frame()
+  .vm.name <- function(src) {
+    if (src == 'pypy')
+      'PyPy'
+    else if (src == 'python')
+      'Python'
+    else if (src == 'pypypromote')
+      'ContextPyPy'
+    else
+      src
+  }
+  df <- data.frame(vm=factor(levels= c('Python', 'PyPy', 'ContextPyPy')))
   for (vm in tsv_names) {
     tsv_name <- last(vm)
     vm_bench <- read.delim(paste0('deltablue-contextpy-osx-',tsv_name,'.tsv'), comment.char = "#", header=TRUE,
-                          col.names=c('benchmark', 'iter', 'value'))
-    vm_bench$vm <- first(capitalize(vm))
+                          col.names=c('benchmark', 'value'))
+    vm_bench$vm <- factor(.vm.name(vm))
     df <- rbind(df, vm_bench)}
   df
 })()
-
-# bench <- droplevels(bench[bench$criterion != 'gc',,])
-bench$vm <- factor(bench$vm, levels = sapply(sapply(tsv_names, first), capitalize))  
-bench$vm <- factor(bench$vm, levels = c('Python', 'PyPy', 'ContextPyPy'))  
-
-levels(bench$vm) <- c('Python', 'PyPy', 'ContextPyPy')
 
 bench$benchmark <- factor(bench$benchmark, levels = c('DeltaBlue','DeltaViolet','DeltaRed')) 
 
@@ -168,7 +176,6 @@ write.xlsx(bench.summary, paste0(input.basename, ".xlsx"), append=TRUE, sheetNam
 
 dodge <- position_dodge(width=.75)
 
-(function() {
 ymax <- round_any(max(bench.summary.graph$cnfIntHigh/1e6, na.rm=TRUE), .5, ceiling)
 
 # -------------------------------- Absolute -----------------------------------------
@@ -178,6 +185,7 @@ p <- ggplot(data=bench.summary.graph,
 ) + default.theme() +
   theme(
     axis.text.x  = element_text(size=6, angle=0, hjust=0.5),
+    axis.text.y  = element_text(size=5),
     legend.position=c(0.75, .8),
     plot.margin = unit(c(.2,0,-2,-0.5),"mm")) +
 #   geom_bar(stat="identity", position=dodge, width=.6, aes(fill = vm))+
@@ -198,12 +206,9 @@ if (rigorous) {
 p
 
 gg.file <- paste0(input.basename, ".pdf")
-ggsave(gg.file, width=figure.width * ratio, height=figure.height, units=c("in"), colormodel='rgb', useDingbats=FALSE)
+ggsave(gg.file, width=figure.width * ratio, height=figure.height * 1.35, units=c("in"), colormodel='rgb', useDingbats=FALSE)
 embed_fonts(gg.file, options=pdf.embed.options)
 
-})()
-
-(function() {
 # -------------------------------- Normal -----------------------------------------
 ymax <- round_any(max(bench.summary.graph$mean.norm, na.rm=TRUE), 0.25, ceiling)
 p <- ggplot(data=bench.summary.graph,
@@ -234,7 +239,6 @@ p
 gg.file <- paste0(input.basename, "-norm.pdf")
 ggsave(gg.file, width=figure.width * ratio, height=figure.height, units=c("in"), colormodel='rgb', useDingbats=FALSE)
 embed_fonts(gg.file, options=pdf.embed.options)
-})()
 
 if (rigorous) {
   # LaTeX table, all

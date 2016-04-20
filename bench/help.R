@@ -28,15 +28,16 @@ pdf.embed.options <- "-dEmbedAllFonts=true -dPDFSETTINGS=/prepress -dCompatibili
 # ---- cmd line ----
 
   
-tsv_names.cmd.line <- function(tsv_names.default) {
+tsv_names.cmd.line <- function(tsv_names.default, check=TRUE) {
   if (length(commandArgs(trailingOnly=TRUE)) > 0) {
     tsv_names = commandArgs(trailingOnly=TRUE)
   } else {
     tsv_names <- tsv_names.default
   }
-  for (tsv_name in tsv_names)
-    if (!file.exists(tsv_name))
-      stop("Cannot open input file ", tsv_name);
+  if (check)
+    for (tsv_name in tsv_names)
+      if (!file.exists(tsv_name))
+        stop("Cannot open input file ", tsv_name);
   tsv_names
 }
 

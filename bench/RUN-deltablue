@@ -5,9 +5,11 @@ set -e
 PY_DEFAULT=${PY:-python}
 ITER_DEFAULT=${ITER:-5}
 SIZE_DEFAULT=${SITE:-20000}
-WARM_DEFAULT=${WARM:-2}
+WARM_DEFAULT=${WARM:-5}
 FILE_DEFAULT=deltablue.py
 
+# TRACE_LIMIT=15000
+TRACE_LIMIT=32000
 
 function _run {
     PY="${1:-$PY_DEFAULT}"; shift || true
@@ -15,7 +17,7 @@ function _run {
     SIZE="${1:-$SIZE_DEFAULT}"; shift || true
     WARM="${1:-$WARM_DEFAULT}"; shift || true
     FILE="${1:-$FILE_DEFAULT}"; shift || true
-    $PY "$FILE" "$ITER" "$WARM" "$SIZE" "$@" 2>/dev/null
+    env $PY "$FILE" "$ITER" "$WARM" "$SIZE" "$@" #2>/dev/null
 }
 
 function run_blue {
@@ -32,8 +34,9 @@ function run_red {
 
 function run_pypy {
     echo "run pypy"
-    local py="pypy --jit trace_limit=15000"
-    printf "Benchmark\titers\truntime\n" > deltablue-contextpy-osx-pypy.tsv
+    local pypypromote=~/dev/pypy/pypy/pypy-c
+    local py="PYPY_NO_PROMOTE=1 $pypypromote --jit trace_limit=$TRACE_LIMIT"
+    printf "Benchmark\truntime\n" > deltablue-contextpy-osx-pypy.tsv
     echo "    blue"
     run_blue "$py" "$@" >> deltablue-contextpy-osx-pypy.tsv
     echo "    violet"
@@ -45,8 +48,8 @@ function run_pypy {
 function run_pypypromote {
     echo "run pypypromote"
     local pypypromote=~/dev/pypy/pypy/pypy-c
-    local py="$pypypromote --jit trace_limit=15000"
-    printf "Benchmark\titers\truntime\n" > deltablue-contextpy-osx-pypypromote.tsv
+    local py="PYPY_NO_PROMOTE=0 $pypypromote --jit trace_limit=$TRACE_LIMIT"
+    printf "Benchmark\truntime\n" > deltablue-contextpy-osx-pypypromote.tsv
     echo "    blue"
     run_blue "$py" "$@" >> deltablue-contextpy-osx-pypypromote.tsv
     echo "    violet"
@@ -58,7 +61,7 @@ function run_pypypromote {
 
 function run_python {
     echo "run python"
-    printf "Benchmark\titers\truntime\n" > deltablue-contextpy-osx-python.tsv
+    printf "Benchmark\truntime\n" > deltablue-contextpy-osx-python.tsv
     echo "    blue"
     run_blue "python" "$@" >> deltablue-contextpy-osx-python.tsv
     echo "    violet"

@@ -1,0 +1,16 @@
+Benchmark	iters	runtime
+DeltaBlue	1	3771310
+DeltaBlue	1	3596916
+DeltaBlue	1	3505696
+DeltaBlue	1	3281213
+DeltaBlue	1	3261991
+DeltaViolet	1	3981010
+DeltaViolet	1	3932142
+DeltaViolet	1	3805176
+DeltaViolet	1	3353770
+DeltaViolet	1	3307346
+DeltaRed	1	5145298
+DeltaRed	1	5129256
+DeltaRed	1	5169143
+DeltaRed	1	4568826
+DeltaRed	1	4515097
