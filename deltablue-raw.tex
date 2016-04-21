@@ -6,9 +6,9 @@
     % table-number-alignment = right, 
     % table-figures-uncertainty= 3, 
     separate-uncertainty = true}
-  \begin{tabular}{lSSS}
+  \begin{tabular}{@{}lSSS@{}}
     \toprule
-    \multicolumn{1}{c}{Benchmark} & \multicolumn{1}{c}{Python} & \multicolumn{1}{c}{PyPy} & \multicolumn{1}{c}{ContextPyPy} \\
+    Benchmark & {Python} & {PyPy} & {ContextPyPy} \\
     \midrule
     \input{bench/DeltaBlue-all}
     \bottomrule
