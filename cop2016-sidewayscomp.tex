@@ -292,9 +292,9 @@ ContextPyPy\footnote{ContextPy as above but with explicit \emph{promote}.} with
 PyPy 5.1 on OS\,X in both benchmarks. Additionally, for the re-run of the 2009
 benchmark, we used
 ContextJS~\cite{lincke+:2011:open-implementation}\footnote{\url{https://github.com/LivelyKernel/LivelyKernel/tree/master/core/cop}
-  revision 0bd117c.} with Chrome 50.0.2661.66 beta (64-bit) on OS\,X, Edge
-25.10586 on Windows 10 and Chrome 49.0.2623.112 on Windows 10; as well as
-LispWorks\textsuperscript{\textregistered} 64-bit on OS\,X.
+  revision 0bd117c.} with V8 (Chrome 50.0.2661.66 beta 64-bit) on OS\,X, Chakra
+(Edge 25.10586) on Windows 10 and V8 (Chrome 49.0.2623.112) on Windows 10; as
+well as LispWorks\textsuperscript{\textregistered} 64-bit 7.0.0 on OS\,X.
 
 Introducing layers with ContextPy increases the initial size of the traces
 beyond PyPy's standard maximum trace limit. Therefore, we use a slightly
@@ -359,31 +359,22 @@ five layers that implement the same method body, where each layer is activated
 in succession.
 
 
-Our second benchmark 
-
-
-
-
+Our second benchmark (\deltablue) measures the relative overhead of sideways
+composition on a more wide-spread benchmark, DeltaBlue. For that, we augmented
+DeltaBlue with additional functionality (reversed lists for storage, count of
+constraint executions and binary constraints), both statically added to the
+benchmark (Delta\emph{Purple}) and dynamically composed via layers
+(Delta\emph{Red}). To measure the overhead of the mere presence of dynamic
+sideways composition functionality without actually using it, we also measured
+DeltaRed with all layers deactivated (Delta\emph{Violet}). We normalize the
+execution time of all four benchmarks to Delta\emph{Blue} on each
+implementation and \ac{vm}. However, we are not interested in the general
+performance improvements of meta-tracing \ac{jit} compilers compared with
+traditional \acp{vm} or \ac{jit} compilers.
 
 All benchmarks are single-threaded.
 
 \subsection{Results}
-
-The results of this benchmark are shown in \autoref{fig:malte-a}. We evaluated
-the performance by comparing each ordinary method \texttt{method$_i$} with the
-execution performance of activating all layers from \texttt{Layer$_2$} to
-\texttt{Layer$_i$} (which gives the same behavior) and normalizing to the
-ordinary method. As we reported in our previous work, ContextL shows a
-performance degradation ranging from 22\% to 65\%. Interestingly, the decrease
-in performance does not seem to correspond to the number of active layers,
-likely due to the variability of the optimizations of the underlying Lisp
-\ac{vm}. On the V8 and Chakra JavaScript \acp{vm}, ContextJS incurs a massive
-performance hit of over 99.7\% in all cases (even where no layer is
-active). ContextPy on the Python \ac{vm} is little better with overhead around
-95\%.
-
-% TODO ....
-Running ContextPy on the meta-tracing PyPy \ac{vm} ...
 
 \begin{figure*}[htb]
   \centering
@@ -395,6 +386,23 @@ Running ContextPy on the meta-tracing PyPy \ac{vm} ...
   \caption{\copa}
   \label{fig:malte-a}
 \end{figure*}
+
+The results of the \copa benchmark are shown in \autoref{fig:malte-a}. We evaluated
+the performance by comparing each ordinary method \texttt{method\textsubscript{i}} with the
+execution performance of activating all layers from \texttt{Layer\textsubscript{1}} to
+\texttt{Layer\textsubscript{i}} (which gives the same behavior) and normalizing to the
+ordinary method. As we reported in our previous work, ContextL shows a
+performance degradation ranging from \SIrange{22}{65}\percent. Interestingly, the decrease
+in performance does not seem to correspond to the number of active layers,
+likely due to the variability of the optimizations of the underlying Lisp
+\ac{vm}. On the V8 and Chakra JavaScript \acp{vm}, ContextJS incurs a massive
+performance hit of over 99.7\% in all cases (even where no layer is
+active). ContextPy on the Python \ac{vm} is little better with overhead around
+95\%.
+
+% TODO ....
+Running ContextPy on the meta-tracing PyPy \ac{vm} ...
+
 
 
 The results of this benchmark are shown in \autoref{fig:malte-b}. The
