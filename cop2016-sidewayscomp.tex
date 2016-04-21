@@ -19,6 +19,9 @@
 \newacronym{jit}{\textsc{jit}}{just-in-time}
 \newacronym{vm}{\textsc{vm}}{virtual machine}
 \newacronym{ffi}{\textsc{ffi}}{foreign-function interface}
+\newcommand*\copa{\textsc{cop}\,\oldstylenums{09}\,a\xspace}
+\newcommand*\copb{\textsc{cop}\,\oldstylenums{09}\,b\xspace}
+\newcommand*\deltablue{\textsc{DeltaBlue}\xspace}
 
 \begin{document}
 \conferenceinfo{COP '16}{July 19, 2016, Rome, Italy}
@@ -217,13 +220,12 @@ execution time.
 Up until recently, this \emph{promotion} of objects had not been available to
 language-level implementers of \ac{cop}. However, at the time of writing, one
 \ac{vm} with meta-tracing \ac{jit} compiler (PyPy) exposes the \emph{promote}
-functionality to the language-level as experimental features and it is possible
-to use it for a \ac{cop} implementation. The composition of active layers can
-now be promoted and the meta-tracing \ac{jit} compiler now ensures that (a) a
-specialized traces exists for each encountered composition, and (b) within a
-given trace, the composition wont change and can be relied upon. This
-assumption now can be made when exercising lookup during execution, saving
-execution time.
+functionality to the language-level and it is possible to use it for a \ac{cop}
+implementation. The composition of active layers can now be promoted and the
+meta-tracing \ac{jit} compiler now ensures that (a) a specialized traces exists
+for each encountered composition, and (b) within a given trace, the composition
+wont change and can be relied upon. This assumption now can be made when
+exercising lookup during execution, saving execution time.
 
 
 \section{<<Impl: ContextPy, VM interface, applevel promote>>}
@@ -270,12 +272,6 @@ an Intel Core i7-4850HQ at \SI{2.3}{\GHz} with \SI{6}{\mega\byte} cache and
 % \SI{20}{\mega\byte} cache and \SI{16}{\giga\byte} of RAM. 
 % Although virtualized on Xen, the machine was idle.
 % The machine ran Ubuntu 14.04.1 LTS with a \SI{64}{\bit} Linux 3.2.0.
-RPython as of revision
-648874ef8243
- was used for <<pypypromote>>.
-
-All benchmarks are single-threaded.
-
 
 \paragraph{Implementations} %
 
@@ -291,21 +287,25 @@ and additionally for <<maltebench>>
 \item ContextJS with Chrome 50.0.2661.66 beta (64-bit) on OS\,X
 \item << ContextJS Win10 Edge -- tim? >>
 \item <<ContextJS Win10 Chrome -- tim?>>
-\item <<(ContextJS Win10 Firefox -- tim?)>>
 \end{itemize}
+
+We use a slightly altered build of PyPy 5.1 that allows a much higher trace
+limit than the standard build because introducing layers with ContextPy
+increases the initial size of the traces beyond PyPy's standard maximum.
+
 
 \paragraph{Methodology} 
 % INITSIZE = 200000
 % MAXSIZE = 1000000000
 % TARGETTIME = 5.0 * 1000
-For <<maltebench>>, every benchmark was run with increasing size until a
+For \copa and \copb (see \autoref{sec:benchmarks}), every benchmark was run with increasing size until a
 measurement took at least 5 seconds; this matches the original
 methodology~\cite{appeltauer+:2009:comparison-context-oriented}.Warm-up is
 provided by the not measured runs.
 % ITER_DEFAULT=${ITER:-5}
 % SIZE_DEFAULT=${SITE:-18000}
 % WARM_DEFAULT=${WARM:-3}
-For <<DeltaBlue>>, every benchmark was run 5 times uninterrupted at highest
+For \deltablue (see \autoref{sec:benchmarks}), every benchmark was run 5 times uninterrupted at highest
 priority in a new process with additional 3 times prior to measurement for
 PyPy\footnote{Python did not exhibit any warm-up-related differences}. The
 execution time was always measured \emph{in-system} and, hence, does not
@@ -320,13 +320,13 @@ a \SI{95}{\percent} confidence level.
 
 
 \subsection{Benchmarks}
+\label{sec:benchmarks}
 
 Our first set of benchmarks is taken from one of our earlier
 papers~\cite{appeltauer+:2009:comparison-context-oriented}. These
 micro-benchmarks attempt to measure the pure performance overhead of dispatching
 to active layers and of layer activation.
-
-In the first of these benchmarks, we use an object with ten integer variables
+In the first of these benchmarks (\copa), we use an object with ten integer variables
 (\texttt{counter$_1$} to \texttt{counter$_{10}$}) that provides ten methods
 (\texttt{method$_1$} to \texttt{method$_{10}$}), where each \texttt{method$_i$}
 increments all counters from \texttt{counter$_1$} to \texttt{counter$_i$} by
@@ -336,6 +336,24 @@ increments only \texttt{counter$_1$}, and nine layers (\texttt{Layer$_2$} to
 increment one of the other counters. Running just the \texttt{layered} method
 without any layers being active thus yields the same behavior as
 \texttt{method$_1$}.
+
+
+In our second benchmark (\copb) we measure the performance impact of layer
+activation. For most \ac{cop} languages, layer activation means updating
+internal data structures with the current layer composition. To quantify this
+impact, we measured the execution time of running five methods
+(\texttt{method$_1$} to \texttt{method$_5$}) in succession that each increment
+one counter. We compare this to the execution time of five partial methods from
+five layers that implement the same method body, where each layer is activated
+in succession.
+
+
+
+
+
+All benchmarks are single-threaded.
+
+\subsection{Results}
 
 The results of this benchmark are shown in \autoref{fig:malte-a}. We evaluated
 the performance by comparing each ordinary method \texttt{method$_i$} with the
@@ -362,14 +380,6 @@ Running ContextPy on the meta-tracing PyPy \ac{vm} ...
   \label{fig:malte-a}
 \end{figure*}
 
-In our second benchmark we measure the performance impact of layer
-activation. For most \ac{cop} languages, layer activation means updating
-internal data structures with the current layer composition. To quantify this
-impact, we measured the execution time of running five methods
-(\texttt{method$_1$} to \texttt{method$_5$}) in succession that each increment
-one counter. We compare this to the execution time of five partial methods from
-five layers that implement the same method body, where each layer is activated
-in succession.
 
 The results of this benchmark are shown in \autoref{fig:malte-b}. The
 performance impact for layer activation for each of the tested systems is
@@ -427,6 +437,6 @@ purposes.
 \printbibliography
 \appendix
 % \section{Appendix Title}
-\input{malte-raw}
 \input{deltablue-raw}
+\input{malte-raw}
 \end{document}

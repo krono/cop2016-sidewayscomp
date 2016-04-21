@@ -1,4 +1,48 @@
 %
+\input{malte-a-overview}
+\begingroup
+\newcolumntype{P}{S[table-format=3.2]<{{\,\si{\percent}}}}
+\begin{table*}
+\centering
+\caption{Bench A raw ratios}
+\smaller
+\begin{tabular}{rPPPPPPP}
+\toprule
+ & \multicolumn{1}{c}{ContextL} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextPy} & \multicolumn{1}{c}{ContextPy} & \multicolumn{1}{c}{ContextPyPy}\\
+ & \multicolumn{1}{c}{~} & \multicolumn{1}{c}{Edge} & \multicolumn{1}{c}{Chrome OSX} & \multicolumn{1}{c}{Chrome Win} & \multicolumn{1}{c}{Python OSX} & \multicolumn{1}{c}{PyPy OSX} & \multicolumn{1}{c}{PyPy OSX}\\
+\midrule
+no activate layer & 67.17 & 0.04 & 0.13 & 0.05 & 4.20 & 347.33 & 441.73 \\
+1 active layer & 35.90 & 0.09 & 0.09 & 0.03 & 4.11 & 72.76 & 243.82 \\
+2 active layer & 36.66 & 0.08 & 0.07 & 0.03 & 3.86 & 47.07 & 244.15 \\
+3 active layer & 43.75 & 0.10 & 0.06 & 0.02 & 3.80 & 37.48 & 196.92 \\
+4 active layer & 44.90 & 0.08 & 0.05 & 0.04 & 3.65 & 27.90 & 86.65 \\
+5 active layer & 47.81 & 0.12 & 0.05 & 0.05 & 3.58 & 28.67 & 94.42 \\
+6 active layer & 77.95 & 0.22 & 0.05 & 0.05 & 3.45 & 26.40 & 90.14 \\
+7 active layer & 42.77 & 0.18 & 0.06 & 0.05 & 3.42 & 12.38 & 16.06 \\
+8 active layer & 49.87 & 0.18 & 0.06 & 0.05 & 3.43 & 5.17 & 5.35 \\
+9 active layer & 37.90 & 0.18 & 0.06 & 0.06 & 3.50 & 4.42 & 4.51 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+\begin{table*}
+\centering
+\caption{Bench B raw ratios}
+\smaller
+\begin{tabular}{rPPPPPPP}
+\toprule
+ & \multicolumn{1}{c}{ContextL} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextPy} & \multicolumn{1}{c}{ContextPy} & \multicolumn{1}{c}{ContextPyPy}\\
+ & \multicolumn{1}{c}{~} & \multicolumn{1}{c}{Edge} & \multicolumn{1}{c}{Chrome OSX} & \multicolumn{1}{c}{Chrome Win} & \multicolumn{1}{c}{Python OSX} & \multicolumn{1}{c}{PyPy OSX} & \multicolumn{1}{c}{PyPy OSX}\\
+\midrule
+no activate layer & 100.00 & 100.00 & 100.00 & 100.00 & 100.00 & 100.00 & 100.00 \\
+1 active layer & 74.97 & 91.56 & 50.00 & 71.13 & 89.22 & 89.59 & 80.16 \\
+2 active layer & 66.25 & 67.17 & 50.00 & 52.01 & 80.41 & 61.37 & 21.88 \\
+3 active layer & 57.18 & 63.70 & 25.00 & 38.59 & 72.23 & 43.84 & 13.81 \\
+4 active layer & 22.56 & 53.07 & 25.00 & 29.40 & 66.51 & 34.79 & 10.32 \\
+5 active layer & 24.72 & 45.31 & 12.50 & 22.74 & 61.59 & 30.19 & 8.08 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+\endgroup
 \clearpage\onecolumn
 \begingroup
 \newcolumntype{B}{S[table-auto-round = true,exponent-product=\cdot,scientific-notation=true,table-figures-decimal=2,table-figures-integer=2,table-figures-exponent=1]}
@@ -68,55 +112,7 @@ B@{}T@{}B
 % \end{table}
 \end{sidewaystable}
 \endgroup
-\clearpage
 
-\input{malte-a-overview}
-
-\begingroup
-\newcolumntype{P}{S[table-format=3.2]<{{\,\si{\percent}}}}
-\begin{table*}
-\centering
-\caption{Bench A raw ratios}
-\smaller
-\begin{tabular}{rPPPPPPP}
-\toprule
- & \multicolumn{1}{c}{ContextL} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextPy} & \multicolumn{1}{c}{ContextPy} & \multicolumn{1}{c}{ContextPyPy}\\
- & \multicolumn{1}{c}{~} & \multicolumn{1}{c}{Edge} & \multicolumn{1}{c}{Chrome OSX} & \multicolumn{1}{c}{Chrome Win} & \multicolumn{1}{c}{Python OSX} & \multicolumn{1}{c}{PyPy OSX} & \multicolumn{1}{c}{PyPy OSX}\\
-\midrule
-no activate layer & 67.17 & 0.04 & 0.13 & 0.05 & 4.20 & 347.33 & 441.73 \\
-1 active layer & 35.90 & 0.09 & 0.09 & 0.03 & 4.11 & 72.76 & 243.82 \\
-2 active layer & 36.66 & 0.08 & 0.07 & 0.03 & 3.86 & 47.07 & 244.15 \\
-3 active layer & 43.75 & 0.10 & 0.06 & 0.02 & 3.80 & 37.48 & 196.92 \\
-4 active layer & 44.90 & 0.08 & 0.05 & 0.04 & 3.65 & 27.90 & 86.65 \\
-5 active layer & 47.81 & 0.12 & 0.05 & 0.05 & 3.58 & 28.67 & 94.42 \\
-6 active layer & 77.95 & 0.22 & 0.05 & 0.05 & 3.45 & 26.40 & 90.14 \\
-7 active layer & 42.77 & 0.18 & 0.06 & 0.05 & 3.42 & 12.38 & 16.06 \\
-8 active layer & 49.87 & 0.18 & 0.06 & 0.05 & 3.43 & 5.17 & 5.35 \\
-9 active layer & 37.90 & 0.18 & 0.06 & 0.06 & 3.50 & 4.42 & 4.51 \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-
-\begin{table*}
-\centering
-\caption{Bench B raw ratios}
-\smaller
-\begin{tabular}{rPPPPPPP}
-\toprule
- & \multicolumn{1}{c}{ContextL} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextPy} & \multicolumn{1}{c}{ContextPy} & \multicolumn{1}{c}{ContextPyPy}\\
- & \multicolumn{1}{c}{~} & \multicolumn{1}{c}{Edge} & \multicolumn{1}{c}{Chrome OSX} & \multicolumn{1}{c}{Chrome Win} & \multicolumn{1}{c}{Python OSX} & \multicolumn{1}{c}{PyPy OSX} & \multicolumn{1}{c}{PyPy OSX}\\
-\midrule
-no activate layer & 100.00 & 100.00 & 100.00 & 100.00 & 100.00 & 100.00 & 100.00 \\
-1 active layer & 74.97 & 91.56 & 50.00 & 71.13 & 89.22 & 89.59 & 80.16 \\
-2 active layer & 66.25 & 67.17 & 50.00 & 52.01 & 80.41 & 61.37 & 21.88 \\
-3 active layer & 57.18 & 63.70 & 25.00 & 38.59 & 72.23 & 43.84 & 13.81 \\
-4 active layer & 22.56 & 53.07 & 25.00 & 29.40 & 66.51 & 34.79 & 10.32 \\
-5 active layer & 24.72 & 45.31 & 12.50 & 22.74 & 61.59 & 30.19 & 8.08 \\
-\bottomrule
-\end{tabular}
-\end{table*}
-\endgroup
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "cop2016-sidewayscomp"
