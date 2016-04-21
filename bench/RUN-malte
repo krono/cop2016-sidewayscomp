@@ -6,7 +6,7 @@ PY_DEFAULT=${PY:-python}
 FILE_DEFAULT="contextpy/contextpyBenchmark.py"
 
 # TRACE_LIMIT=15000
-TRACE_LIMIT=32000
+TRACE_LIMIT=64000
 
 if [ "Darwin" = "$(uname)" ]; then
     OS=osx

@@ -4,12 +4,12 @@ set -e
 
 PY_DEFAULT=${PY:-python}
 ITER_DEFAULT=${ITER:-5}
-SIZE_DEFAULT=${SITE:-20000}
-WARM_DEFAULT=${WARM:-5}
+SIZE_DEFAULT=${SITE:-18000}
+WARM_DEFAULT=${WARM:-3}
 FILE_DEFAULT=deltablue.py
 
 # TRACE_LIMIT=15000
-TRACE_LIMIT=32000
+TRACE_LIMIT=64000
 
 function _run {
     PY="${1:-$PY_DEFAULT}"; shift || true
@@ -17,12 +17,17 @@ function _run {
     SIZE="${1:-$SIZE_DEFAULT}"; shift || true
     WARM="${1:-$WARM_DEFAULT}"; shift || true
     FILE="${1:-$FILE_DEFAULT}"; shift || true
-    env $PY "$FILE" "$ITER" "$WARM" "$SIZE" "$@" #2>/dev/null
+    env $PY "$FILE" "$ITER" "$WARM" "$SIZE" "$@" 2>/dev/null
 }
 
 function run_blue {
     _run "$@" deltablue.py 0
 }
+
+function run_purple {
+    _run "$@" deltapurple.py 1
+}
+
 
 function run_violet {
     _run "$@" deltared.py 0
@@ -39,6 +44,8 @@ function run_pypy {
     printf "Benchmark\truntime\n" > deltablue-contextpy-osx-pypy.tsv
     echo "    blue"
     run_blue "$py" "$@" >> deltablue-contextpy-osx-pypy.tsv
+    echo "    purple"
+    run_purple "$py" "$@" >> deltablue-contextpy-osx-pypy.tsv
     echo "    violet"
     run_violet "$py" "$@" >> deltablue-contextpy-osx-pypy.tsv
     echo "    red"
@@ -52,6 +59,8 @@ function run_pypypromote {
     printf "Benchmark\truntime\n" > deltablue-contextpy-osx-pypypromote.tsv
     echo "    blue"
     run_blue "$py" "$@" >> deltablue-contextpy-osx-pypypromote.tsv
+    echo "    purple"
+    run_purple "$py" "$@" >> deltablue-contextpy-osx-pypypromote.tsv
     echo "    violet"
     run_violet "$py" "$@" >> deltablue-contextpy-osx-pypypromote.tsv
     echo "    red"
@@ -64,6 +73,8 @@ function run_python {
     printf "Benchmark\truntime\n" > deltablue-contextpy-osx-python.tsv
     echo "    blue"
     run_blue "python" "$@" >> deltablue-contextpy-osx-python.tsv
+    echo "    purple"
+    run_purple "python" "$@" >> deltablue-contextpy-osx-python.tsv
     echo "    violet"
     run_violet "python" "$@" >> deltablue-contextpy-osx-python.tsv
     echo "    red"
@@ -79,5 +90,5 @@ elif [ "$1" = "python" ]; then
 else
     run_pypypromote $ITER_DEFAULT $SIZE_DEFAULT $WARM_DEFAULT
     run_pypy $ITER_DEFAULT $SIZE_DEFAULT $WARM_DEFAULT
-    run_python $ITER_DEFAULT $SIZE_DEFAULT $WARM_DEFAULT
+    run_python $ITER_DEFAULT $SIZE_DEFAULT 0 # doesn't make sense
 fi

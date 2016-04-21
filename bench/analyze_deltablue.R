@@ -2,7 +2,8 @@
 
 # in inches
 figure.width <- 7
-ratio <- 2/3
+# ratio <- 2/3
+ratio <- 3/4
 figure.height <- 2.3
 # figure.height <- 1.4
 
@@ -13,11 +14,13 @@ all.mean.in.graph.shootout <- FALSE
 MAX.CROSS <- 3
 
 blacklist <- c()
-reference.vm <- 'Python'
-reference.benchmark <- 'DeltaBlue'
+# reference.vm <- 'Python'
+#reference.benchmark <- 'Red'
+
+
 
 input.basename <- 'DeltaBlue'
-
+bench_names <- c('deltablue') #, 'richards')
 tsv_names.default <- c('python', 'pypy', 'pypypromote')
 
 
@@ -50,6 +53,18 @@ if (FALSE) {
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
+.bench <- data.frame()
+.bench.summary <- data.frame()
+
+for (bench_name in bench_names) {
+  if (bench_name == 'deltablue') {
+    bench_levels = c('DeltaBlue', 'DeltaPurple', 'DeltaViolet','DeltaRed')
+    reference.benchmark <- 'DeltaBlue'
+  } else if (bench_name == 'richards') {
+    bench_levels = c('Richards','RichardsViolet','RichardsRed')
+    reference.benchmark <- 'Richards'
+  } else {stop ("why?")}
+  
 bench <- (function () {
   .vm.name <- function(src) {
     if (src == 'pypy')
@@ -64,20 +79,23 @@ bench <- (function () {
   df <- data.frame(vm=factor(levels= c('Python', 'PyPy', 'ContextPyPy')))
   for (vm in tsv_names) {
     tsv_name <- last(vm)
-    vm_bench <- read.delim(paste0('deltablue-contextpy-osx-',tsv_name,'.tsv'), comment.char = "#", header=TRUE,
+    vm_bench <- read.delim(paste0(bench_name, '-contextpy-osx-',tsv_name,'.tsv'), comment.char = "#", header=TRUE,
                           col.names=c('benchmark', 'value'))
+    vm_bench$bench <- capitalize(bench_name)
     vm_bench$vm <- factor(.vm.name(vm))
     df <- rbind(df, vm_bench)}
   df
 })()
 
-bench$benchmark <- factor(bench$benchmark, levels = c('DeltaBlue','DeltaViolet','DeltaRed')) 
+bench$vm <- factor(bench$vm, levels= c('Python', 'PyPy', 'ContextPyPy'))
+bench$benchmark <- factor(bench$benchmark, levels=bench_levels) 
 
 # --- shaping data
 
 bench <- droplevels(bench[!(bench$benchmark %in% blacklist),,])
 # bench <- bench[c('criterion','vm','benchmark','value', 'variable_values')]
-bench <- bench[c('vm','benchmark','value')]
+# bench <- bench[c('vm','benchmark','value')]
+# bench <- bench[c('bench','vm','benchmark','value')]
 
 num.vms <- length(levels(factor(bench$vm)))
 num.runs <- length(bench$benchmark)
@@ -85,7 +103,7 @@ num.benches <- length(levels(bench$benchmark))
 # num.vars <- length(levels(factor(bench$variable_values)))
 # num.crit <- length(levels(bench$criterion))
 num.vars <- 1
-num.crit <- 1
+num.crit <- length(levels(factor(bench$bench)))
 
 if (num.vars == 0) {
   num.vars <- 1
@@ -97,14 +115,15 @@ bench <- fill.missing(bench)
 
 ######################################################
 
-# bench.tot <- droplevels(bench[bench$criterion == 'total',,drop=TRUE])
-# bench.cpu <- droplevels(bench[bench$criterion == "cpu",,drop=TRUE])
-bench.tot <- bench
 
 group.by <- c("vm","benchmark")
 
-bench.summary <- summarize.bench(bench.tot, rigorous, FALSE, group.by, reference.benchmark)
+.bench.summary <- rbind(.bench.summary, summarize.bench(bench, rigorous, FALSE, group.by, reference.benchmark))
+.bench <- rbind(.bench, bench)
+}
 
+bench <- .bench
+bench.summary <- .bench.summary
 
 bench.summary.graph <- data.frame(bench.summary)
 
@@ -118,8 +137,8 @@ bench.summary.graph <- data.frame(bench.summary)
 # bench.summary.graph$benchmark <- reorder(bench.summary.graph$benchmark, bench.summary.graph$mean.norm,
 #                                          function(x) {if (x[[1]] > 1.0) { max(x) } else { min(x) }})
 
-bench.summary.graph$vm <- reorder(bench.summary.graph$vm, bench.summary.graph$mean.norm,
-                                         function(x) {if (x[[1]] > 1.0) { max(x) } else { min(x) }})
+# bench.summary.graph$vm <- reorder(bench.summary.graph$vm, bench.summary.graph$mean.norm,
+#                                   function(x) {if (x[[1]] > 1.0) { max(x) } else { min(x) }})
 
 
 # .selection <- c('vm','mean.norm')
@@ -171,10 +190,12 @@ rownames(bench.summary.ltx) <- bench.summary.sel$benchmark
 # ----- Outputting -----
 
 # Excel for overall data
-write.xlsx(bench.tot, paste0(input.basename, ".xlsx"), append=FALSE, sheetName="bench")
+write.xlsx(bench, paste0(input.basename, ".xlsx"), append=FALSE, sheetName="bench")
 write.xlsx(bench.summary, paste0(input.basename, ".xlsx"), append=TRUE, sheetName="summary")
 
 dodge <- position_dodge(width=.75)
+
+if (FALSE){ # Me no want ya
 
 ymax <- round_any(max(bench.summary.graph$cnfIntHigh/1e6, na.rm=TRUE), .5, ceiling)
 
@@ -194,7 +215,7 @@ p <- ggplot(data=bench.summary.graph,
   geom_point(position=dodge,aes(y=1, ymax=ymax, shape=benchmark),size=2, color="grey90",stat="identity") +
   ylab("Absolute Runtime in seconds") +
   scale_y_continuous(breaks=seq(0,ymax,2), limits=c(0,ymax),expand=c(0,0)) +
-  scale_fill_manual(name = "Benchmark", values = c("blue","violet", "red")) +
+  scale_fill_manual(name = "Benchmark", values = c("blue", "purple", "violet", "red")) +
 #   scale_fill_brewer(name = "Benchmark", type="qual", palette="Set1") +
   scale_shape(name = "Benchmark", solid = FALSE) 
 # +
@@ -209,8 +230,9 @@ gg.file <- paste0(input.basename, ".pdf")
 ggsave(gg.file, width=figure.width * ratio, height=figure.height * 1.35, units=c("in"), colormodel='rgb', useDingbats=FALSE)
 embed_fonts(gg.file, options=pdf.embed.options)
 
+}
 # -------------------------------- Normal -----------------------------------------
-ymax <- round_any(max(bench.summary.graph$mean.norm, na.rm=TRUE), 0.25, ceiling)
+ymax <- round_any(max(bench.summary.graph$mean.norm, na.rm=TRUE), 0.5, ceiling)
 p <- ggplot(data=bench.summary.graph,
             #        aes(x=benchmark,y=mean.norm,group=interaction(benchmark,vm),fill=vm,)
             aes(x=vm,y=mean.norm,group=interaction(vm,benchmark),fill=benchmark,)
@@ -225,8 +247,8 @@ p <- ggplot(data=bench.summary.graph,
   geom_point(position=dodge,aes(y=0.15, ymax=ymax, shape=benchmark),size=2, color="grey90",stat="identity") +
   ylab("Relative Runtime") +
   scale_y_continuous(breaks=seq(0,ymax,.5), limits=c(0,ymax),expand=c(0,0)) +
-  scale_fill_manual(name = "Benchmark", values = c("blue","violet", "red")) +
-  #   scale_fill_brewer(name = "Benchmark", type="qual", palette="Set1") +
+  scale_fill_manual(name = "Benchmark", values = c("blue", "purple", "violet", "red")) +
+#     scale_fill_brewer(name = "Benchmark", type="qual", palette="Set1") +
   scale_shape(name = "Benchmark", solid = FALSE) 
 # +
 #   facet_grid(. ~ overall, scales="free", space="free",labeller=label_bquote(""))

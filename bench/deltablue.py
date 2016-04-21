@@ -625,19 +625,18 @@ def entry_point(iterations):
     return startTime, endTime
 
 if __name__ == '__main__':
-    import sys
+    import sys, gc
 
     numIterations = int(sys.argv[1])
     warmUp = int(sys.argv[2])
     innerIter = int(sys.argv[3])
     bench = 'DeltaBlue'
 
-    for i in xrange(warmUp):
-        startTime, endTime = entry_point(innerIter)
-
     # print("Benchmark\titers\truntime")
-    for i in xrange(numIterations):
+    for i in xrange(numIterations+warmUp):
+        gc.collect()
         startTime, endTime = entry_point(innerIter)
         microseconds = int((endTime - startTime) * 1000 * 1000)
-        print("%s\t%d" % (bench, microseconds))
+        if i >= warmUp:
+            print("%s\t%d" % (bench, microseconds))
 

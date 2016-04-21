@@ -20,28 +20,15 @@ the layout & logic from the original. (Ugh.)
 """
 from __future__ import print_function
 
-from __future__ import with_statement
-from contextpy.contextpy import layer, proceed, activelayer, activelayers, inactivelayer, after, around, before, base, globalActivateLayer, globalDeactivateLayer
-
-
-Reverse = layer("Reverse")
-ReversePlan = layer("ReversePlan")
-Counting = layer("Counting")
-
-LayerCounting = layer("LayerCounting")
-layerActive_Counting = False
+counting = False
 
 # The JS variant implements "OrderedCollection", which basically completely
 # overlaps with ``list``. So we'll cheat. :D
 class OrderedCollection(list):
 
     def remove(self, itm):
-        super(OrderedCollection, self).remove(itm)
-
-    @around(Reverse)
-    def remove(self, itm):
         self.reverse()
-        proceed(itm)
+        super(OrderedCollection, self).remove(itm)
         self.reverse()
 
 
@@ -110,12 +97,10 @@ class Constraint(object):
         super(Constraint, self).__init__()
         self.strength = strength
 
-    @around(Counting)
     @staticmethod
     def reset_counter():
         Constraint.__count = 0
 
-    @around(Counting)
     @staticmethod
     def counter_value():
         return Constraint.__count
@@ -161,22 +146,12 @@ class Constraint(object):
         return False
 
     def execute(self):
-        pass
-
-    @after(Counting)
-    def execute(self, __result__):
-        Constraint.__count += 1
-        return __result__
-
-    @before(LayerCounting)
-    def execute(self):
-        global layerActive_Counting
-        if layerActive_Counting:
-            globalDeactivateLayer(Counting)
-            layerActive_Counting = False
+        global counting
+        if counting:
+            Constraint.__count += 1
+            counting = False
         else:
-            globalActivateLayer(Counting)
-            layerActive_Counting = True
+            counting = True
 
 class UnaryConstraint(Constraint):
     def __init__(self, v, strength):
@@ -249,12 +224,10 @@ class Direction(object):
 
 class BinaryConstraint(Constraint):
 
-    @around(Counting)
     @staticmethod
     def reset_counter():
         BinaryConstraint.__inout_count = 0
 
-    @around(Counting)
     @staticmethod
     def counter_value():
         return BinaryConstraint.__inout_count
@@ -302,21 +275,15 @@ class BinaryConstraint(Constraint):
         self.input().mark = mark
 
     def input(self):
+        BinaryConstraint.__inout_count += 1
         if self.direction == Direction.FORWARD:
             return self.v1
 
         return self.v2
 
-    @before(Counting)
-    def input(self):
-        BinaryConstraint.__inout_count += 1
 
-    @after(Counting)
     def output(self):
         BinaryConstraint.__inout_count -= 1
-
-
-    def output(self):
         if self.direction == Direction.FORWARD:
             return self.v2
 
@@ -416,11 +383,6 @@ class Variable(object):
         )
 
     def add_constraint(self, constraint):
-        self.constraints.append(constraint)
-
-
-    @around(Reverse)
-    def add_constraint(self, constraint):
         self.constraints.insert(0, constraint)
 
     def remove_constraint(self, constraint):
@@ -470,22 +432,6 @@ class Planner(object):
         todo = sources
 
         while len(todo):
-            c = todo.pop(0)
-
-            if c.output().mark != mark and c.inputs_known(mark):
-                plan.add_constraint(c)
-                c.output().mark = mark
-                todo = self.add_constraints_consuming_to(c.output(), todo)
-
-        return plan
-
-    @around(ReversePlan)
-    def make_plan(self, sources):
-        mark = self.new_mark()
-        plan = Plan()
-        todo = sources
-
-        while len(todo):
             c = todo.pop()
 
             if c.output().mark != mark and c.inputs_known(mark):
@@ -505,34 +451,6 @@ class Planner(object):
 
         return self.make_plan(sources)
 
-    @around(Reverse)
-    def extract_plan_from_constraints(self, constraints):
-        sources = OrderedCollection()
-
-        for c in constraints:
-            if c.is_input() and c.is_satisfied():
-                sources.append(c)
-
-        with activelayers(ReversePlan):
-            return self.make_plan(sources)
-
-    def add_propagate(self, c, mark):
-        todo = OrderedCollection()
-        todo.append(c)
-
-        while len(todo):
-            d = todo.pop(0)
-
-            if d.output().mark == mark:
-                self.incremental_remove(c)
-                return False
-
-            d.recalculate()
-            todo = self.add_constraints_consuming_to(d.output(), todo)
-
-        return True
-
-    @around(Reverse)
     def add_propagate(self, c, mark):
         todo = OrderedCollection()
         todo.append(c)
@@ -549,31 +467,6 @@ class Planner(object):
 
         return True
 
-    def remove_propagate_from(self, out):
-        out.determined_by = None
-        out.walk_strength = Strength.WEAKEST
-        out.stay = True
-        unsatisfied = OrderedCollection()
-        todo = OrderedCollection()
-        todo.append(out)
-
-        while len(todo):
-            v = todo.pop(0)
-
-            for c in v.constraints:
-                if not c.is_satisfied():
-                    unsatisfied.append(c)
-
-            determining = v.determined_by
-
-            for c in v.constraints:
-                if c != determining and c.is_satisfied():
-                    c.recalculate()
-                    todo.append(c.output())
-
-        return unsatisfied
-
-    @around(Reverse)
     def remove_propagate_from(self, out):
         out.determined_by = None
         out.walk_strength = Strength.WEAKEST
@@ -608,21 +501,6 @@ class Planner(object):
                 # I guess we're just updating a reference (``coll``)? Seems
                 # inconsistent with the rest of the implementation, where they
                 # return the lists...
-                todo.append(c)
-
-        return coll + todo
-
-    @around(ReversePlan)
-    def add_constraints_consuming_to(self, v, coll):
-        determining = v.determined_by
-        cc = v.constraints
-        todo = OrderedCollection()
-
-        for c in cc:
-            if c != determining and c.is_satisfied():
-                # I guess we're just updating a reference (``coll``)? Seems
-                # inconsistent with the rest of the implementation, where they
-                # return the lists...
                 todo.insert(0, c)
         return todo + coll
 
@@ -632,10 +510,6 @@ class Plan(object):
         self.v = OrderedCollection()
 
     def add_constraint(self, c):
-        self.v.append(c)
-
-    @around(Reverse)
-    def add_constraint(self, c):
         self.v.insert(0, c)
 
     def __len__(self):
@@ -644,11 +518,6 @@ class Plan(object):
     def __getitem__(self, index):
         return self.v[index]
 
-    def execute(self):
-        for c in self.v:
-            c.execute()
-
-    @around(Reverse)
     def execute(self):
         for i in xrange(len(self.v) - 1, -1, -1):
             self.v[i].execute()
@@ -776,37 +645,20 @@ def delta_blue():
 
 import time
 
-layered = False
-
 def entry_point(iterations):
-    global layered
-    global layerActive_Counting
+    global counting
     startTime = time.time()
 
-    if layered:
-        globalActivateLayer(Counting)
-        layerActive_Counting = True
-        with activelayers(Reverse, LayerCounting):
-            chain_and_projection_test(iterations)
-        if layerActive_Counting:
-            globalDeactivateLayer(Counting)
-            layerActive_Counting = False
-    else:
-        chain_and_projection_test(iterations)
+    Constraint.reset_counter()
+    BinaryConstraint.reset_counter()
+    counting = True
+    chain_and_projection_test(iterations)
+    print('>> Constraints executed:', Constraint.counter_value(), file=sys.stderr)
+    print('>> Binary input/output difference:', BinaryConstraint.counter_value(), file=sys.stderr)
 
     endTime = time.time()
-    return startTime, endTime
 
-@around(LayerCounting)
-def chain_and_projection_test(iterations):
-    with activelayers(Counting):
-        Constraint.reset_counter()
-        BinaryConstraint.reset_counter()
-    __result__ = proceed(iterations)
-    with activelayers(Counting):
-        print('>> Constraints executed:', Constraint.counter_value(), file=sys.stderr)
-        print('>> Binary input/output difference:', BinaryConstraint.counter_value(), file=sys.stderr)
-    return __result__
+    return startTime, endTime
 
 if __name__ == '__main__':
     import sys, gc
@@ -814,8 +666,7 @@ if __name__ == '__main__':
     numIterations = int(sys.argv[1])
     warmUp = int(sys.argv[2])
     innerIter = int(sys.argv[3])
-    layered = bool(int(sys.argv[4]))
-    bench = 'DeltaRed' if layered else 'DeltaViolet'
+    bench = 'DeltaPurple'
 
     # print("Benchmark\titers\truntime")
     for i in xrange(numIterations+warmUp):
