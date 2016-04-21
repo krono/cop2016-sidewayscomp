@@ -274,6 +274,9 @@ provide all results in the appendix.
 an Intel Core i7-4850HQ at \SI{2.3}{\GHz} with \SI{6}{\mega\byte} cache and
 \SI{16}{\giga\byte} of RAM. The machine ran Mac OS\,X 10.9.5.
 %%%% Surface Tim??
+Certain benchmarks were run on an Intel Core i7-4650U at \SI{1.7}{\GHz} with
+\SI{4}{\mega\byte} cache and \SI{8}{\giga\byte} of RAM, this machine ran
+Windows 10.
 %
 %%%% Maxinchen
 % an Intel Xeon E5-2650 (Sandy Bridge)  at \SI{2.8}{\GHz} with
@@ -289,8 +292,8 @@ ContextPyPy\footnote{ContextPy as above but with explicit \emph{promote}.} with
 PyPy 5.1 on OS\,X in both benchmarks. Additionally, for the re-run of the 2009
 benchmark, we used
 ContextJS~\cite{lincke+:2011:open-implementation}\footnote{\url{https://github.com/LivelyKernel/LivelyKernel/tree/master/core/cop}
-  revision 0bd117c.} with Chrome 50.0.2661.66 beta (64-bit) on OS\,X, << Win10
-Edge -- tim? >>, and <<Win Chrome -- tim?>> as well as
+  revision 0bd117c.} with Chrome 50.0.2661.66 beta (64-bit) on OS\,X, Edge
+25.10586 on Windows 10 and Chrome 49.0.2623.112 on Windows 10; as well as
 LispWorks\textsuperscript{\textregistered} 64-bit on OS\,X.
 
 Introducing layers with ContextPy increases the initial size of the traces
@@ -305,18 +308,18 @@ standard build.
 % TARGETTIME = 5.0 * 1000
 For \copa and \copb (see \autoref{sec:benchmarks}), every benchmark was run with increasing size until a
 measurement took at least 5 seconds; this matches the original
-methodology~\cite{appeltauer+:2009:comparison-context-oriented}.Warm-up is
-provided by the not measured runs.
+methodology~\cite{appeltauer+:2009:comparison-context-oriented}. Warm-up is
+provided by the not measured runs. 
 % ITER_DEFAULT=${ITER:-5}
 % SIZE_DEFAULT=${SITE:-18000}
 % WARM_DEFAULT=${WARM:-3}
-For \deltablue (see \autoref{sec:benchmarks}), every benchmark was run 5 times uninterrupted at highest
-priority in a new process with additional 3 times prior to measurement for
-PyPy\footnote{Python did not exhibit any warm-up-related differences}. The
-execution time was always measured \emph{in-system} and, hence, does not
-include start-up. We show the arithmetic mean of all runs along with
-bootstrapped~\cite{davison+:1997:confidence-intervals} confidence intervals for
-a \SI{95}{\percent} confidence level.
+For \deltablue (see \autoref{sec:benchmarks}), every benchmark was run 5 times
+uninterrupted in a new process with additional 3 times warm-up prior to
+measurement for PyPy\footnote{Python did not exhibit any warm-up--related
+  differences}. The execution time was always measured \emph{in-system} and,
+hence, does not include start-up. We show the arithmetic mean of all runs along
+with bootstrapped~\cite{davison+:1997:confidence-intervals} confidence
+intervals for a \SI{95}{\percent} confidence level.
 
 %\footnote{Raw figures can be  found as an appendix (\autoref{tab:all})}
 
