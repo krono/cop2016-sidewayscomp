@@ -19,9 +19,9 @@
 \newacronym{jit}{\textsc{jit}}{just-in-time}
 \newacronym{vm}{\textsc{vm}}{virtual machine}
 \newacronym{ffi}{\textsc{ffi}}{foreign-function interface}
-\newcommand*\copa{\textsc{cop}\,\oldstylenums{09}\,a\xspace}
-\newcommand*\copb{\textsc{cop}\,\oldstylenums{09}\,b\xspace}
-\newcommand*\deltablue{\textsc{DeltaBlue}\xspace}
+\DeclareRobustCommand*\copa{\textsc{cop}\,\oldstylenums{09}\,a\xspace}
+\DeclareRobustCommand*\copb{\textsc{cop}\,\oldstylenums{09}\,b\xspace}
+\DeclareRobustCommand*\deltablue{\textsc{DeltaBlue}\xspace}
 
 \begin{document}
 \conferenceinfo{COP '16}{July 19, 2016, Rome, Italy}
@@ -83,18 +83,24 @@ PyPy
 
 \section{Introduction}
 
-\paragraph*{Contributions}
 
+
+% \paragraph*{Contributions}
+
+In this work, we make the following contributions and show
 \begin{itemize}
-\item <<We show that metatracing not only makes python fast, but also COP/SC
-  faster>>
-\item <<We show that \emph{promote}(TBD) can further improve stuff and
-  elimitates COP overhead when COP Layers are present but not in use>>
+\item that the performance overhead of sideways composition is still
+  present in most \ac{cop} implementations;
+\item that meta-tracing--based \ac{jit} compilation can reduce the
+  overhead of sideways composition; and
+\item that communicating the active layer composition \emph{explicitely} to the
+  \ac{jit} compiler can further reduce the overhead of sideways composition.
 \end{itemize}
+
 
 \section{<<Background: COP, COPSurvey, MetaTracing>>}
 
-\subsection{The Performance of COP}
+\subsection{The Performance of \acs{cop}}
 \label{sec:performance-cop}
 \ac{cop} as a modularity mechanism to dynamically adapt behavior at run-time has
 been demonstrated to be useful in a variety of scenarios. Beyond its original
@@ -231,37 +237,39 @@ exercising lookup during execution, saving execution time.
 \section{<<Impl: ContextPy, VM interface, applevel promote>>}
 
 
-\section{<<Eval: Benchmarks>>}
+\section{Performance Evaluation with \acs{cop}}
 
 
-
-
-We evaluate... hypotheses..., as described in the introduction:
+As described in the introduction, we evaluate the following:
 \begin{enumerate}
 \item Sideways composition \emph{still} has a considerable impact on execution
-  time. <<still<-> copsurvey>>
-\item Tracing JITs can alleviate the performance impact of sideways composition.
-\item <<applevel promote>>.
+  time.
+\label{item:1}
+\item Meta-tracing \ac{jit} compilers can alleviate the performance impact of
+  sideways composition on execution time.
+\label{item:2}
+\item Explicit \emph{promotion} of the active layer composition can further
+  improve execution time
+\label{item:3}
 \end{enumerate}
 
-
-
-We tested the first hypothesis by ....
-
-We tested the second hypothesis by ....
-
-We tested the third hypothesis by ....
-
-% PYCKET-COPY - DO NOT USE VERBATIM
-% Our evaluation compares \pycket with multiple configurations and systems on
-% a variety of programs. We present the most important results and include full
-% results in supplemental material.
+For \ref{item:1}, we re-run in parts benchmarks presented in
+2009~\cite{appeltauer+:2009:comparison-context-oriented}, which showed a
+performance impact of sideways composition as used with \ac{cop}
+implementations. For \ref{item:2}, we additionally augment the well-known
+DeltaBlue benchmark~\cite{freeman-benson+:1989:deltablue-algorithm:} with
+layers and additional functionality and compare the impact of sideways
+composition on platforms with and without meta-tracing \ac{jit} compilers.
+For \ref{item:3}, we run both benchmarks with a \emph{promote}-enhanced
+\ac{cop} implementation, as well.
+We present and discuss the most important results for each benchmark and
+provide all results in the appendix.
 
 \subsection{Setup}
 \label{sec:setup}
 
 
-\paragraph{System} We conducted the experiments on %
+\paragraph{System} We executed the benchmarks on %
 % MacBook Pro Tobi
 an Intel Core i7-4850HQ at \SI{2.3}{\GHz} with \SI{6}{\mega\byte} cache and
 \SI{16}{\giga\byte} of RAM. The machine ran Mac OS\,X 10.9.5.
@@ -275,23 +283,20 @@ an Intel Core i7-4850HQ at \SI{2.3}{\GHz} with \SI{6}{\mega\byte} cache and
 
 \paragraph{Implementations} %
 
-<<DeltaBlue/Violet/Red>>
-\begin{itemize}
-\item ContextPy with Python 2.7.5 on OS\,X
-\item ContextPy with PyPy 5.1 on OS\,X
-\item ContextPyPy with PyPy 5.1 on OS\,X
-\end{itemize}
+We used ContextPy\footnote{\url{https://bitbucket.org/cfbolz/contextpy/}
+  revision 5155cb7.} with Python 2.7.5 and PyPy 5.1 on OS\,X and
+ContextPyPy\footnote{ContextPy as above but with explicit \emph{promote}.} with
+PyPy 5.1 on OS\,X in both benchmarks. Additionally, for the re-run of the 2009
+benchmark, we used
+ContextJS~\cite{lincke+:2011:open-implementation}\footnote{\url{https://github.com/LivelyKernel/LivelyKernel/tree/master/core/cop}
+  revision 0bd117c.} with Chrome 50.0.2661.66 beta (64-bit) on OS\,X, << Win10
+Edge -- tim? >>, and <<Win Chrome -- tim?>> as well as
+LispWorks\textsuperscript{\textregistered} 64-bit on OS\,X.
 
-and additionally for <<maltebench>>
-\begin{itemize}
-\item ContextJS with Chrome 50.0.2661.66 beta (64-bit) on OS\,X
-\item << ContextJS Win10 Edge -- tim? >>
-\item <<ContextJS Win10 Chrome -- tim?>>
-\end{itemize}
-
-We use a slightly altered build of PyPy 5.1 that allows a much higher trace
-limit than the standard build because introducing layers with ContextPy
-increases the initial size of the traces beyond PyPy's standard maximum.
+Introducing layers with ContextPy increases the initial size of the traces
+beyond PyPy's standard maximum trace limit. Therefore, we use a slightly
+altered build of PyPy 5.1 that allows a much higher trace limit than the
+standard build.
 
 
 \paragraph{Methodology} 
@@ -315,8 +320,8 @@ a \SI{95}{\percent} confidence level.
 
 %\footnote{Raw figures can be  found as an appendix (\autoref{tab:all})}
 
-\paragraph{Availability}  All of our benchmarks and infrastructure
- are available at <<TBD>>.
+% \paragraph{Availability}  All of our benchmarks and infrastructure
+%  are available at <<TBD>>.
 
 
 \subsection{Benchmarks}
@@ -351,6 +356,9 @@ five layers that implement the same method body, where each layer is activated
 in succession.
 
 
+Our second benchmark 
+
+
 
 
 
@@ -376,23 +384,25 @@ Running ContextPy on the meta-tracing PyPy \ac{vm} ...
 
 \begin{figure*}[htb]
   \centering
-  \includegraphics[height=5.5\baselineskip]{bench/malte-a/malte-a-3}
-  \includegraphics[height=5.5\baselineskip]{bench/malte-a/malte-a-2}
-  \includegraphics[height=5.5\baselineskip]{bench/malte-a/malte-a-4}
-  \caption{Bench A}
+  \hbox to \linewidth{\hss
+  \includegraphics[height=6\baselineskip]{bench/malte-a/malte-a-3}
+  \includegraphics[height=6\baselineskip]{bench/malte-a/malte-a-2}
+  \includegraphics[height=6\baselineskip]{bench/malte-a/malte-a-4}
+  \hss}
+  \caption{\copa}
   \label{fig:malte-a}
 \end{figure*}
 
 
 The results of this benchmark are shown in \autoref{fig:malte-b}. The
 performance impact for layer activation for each of the tested systems is
-comparable and clearly increases as more layers are activated. 
+comparable and clearly increases as more layers are activated.
 % TODO ....
 
 \begin{figure*}[htb]
   \centering
   \includegraphics[width=\linewidth]{bench/malte-b}
-  \caption{Bench B}
+  \caption{\copb}
   \label{fig:malte-b}
 \end{figure*}
 
@@ -417,7 +427,7 @@ DeltaRed~\idBox{red}{\(+\)}, %
   % \includegraphics[width=.48\linewidth]{bench/DeltaBlue-norm.pdf}
   % \hfil
   % \includegraphics[width=.48\linewidth]{bench/DeltaBlue.pdf}
-  \caption{DeltaBlue}
+  \caption{\deltablue}
 \end{figure*}
 
 \subsection{Threats to Validity}
