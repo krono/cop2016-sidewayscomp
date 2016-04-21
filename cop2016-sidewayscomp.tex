@@ -324,26 +324,29 @@ a \SI{95}{\percent} confidence level.
 
 Our first set of benchmarks is taken from one of our earlier
 papers~\cite{appeltauer+:2009:comparison-context-oriented}. These
-micro-benchmarks attempt to measure the pure performance overhead of dispatching
-to active layers and of layer activation.
-In the first of these benchmarks (\copa), we use an object with ten integer variables
-(\texttt{counter$_1$} to \texttt{counter$_{10}$}) that provides ten methods
-(\texttt{method$_1$} to \texttt{method$_{10}$}), where each \texttt{method$_i$}
-increments all counters from \texttt{counter$_1$} to \texttt{counter$_i$} by
-one. The same behavior is provided by a method \texttt{layered}. The base method
-increments only \texttt{counter$_1$}, and nine layers (\texttt{Layer$_2$} to
-\texttt{Layer$_{10}$}) provide a partial method to adapt the base method to each
-increment one of the other counters. Running just the \texttt{layered} method
-without any layers being active thus yields the same behavior as
-\texttt{method$_1$}.
+micro-benchmarks attempt to measure the pure performance overhead of
+dispatching to active layers and of layer activation. In the first part of
+these benchmarks (\copa), we use an object with ten integer variables
+(\texttt{counter\textsubscript{1}} to \texttt{counter\textsubscript{10}}) that
+provides ten methods (\texttt{method\textsubscript{1}} to
+\texttt{method\textsubscript{10}}), where each \texttt{method\textsubscript{i}}
+increments all counters from \texttt{counter\textsubscript{1}} to
+\texttt{counter\textsubscript{i}} by one. The same behavior is provided by a
+method \texttt{layered}. The base method increments only
+\texttt{counter\textsubscript{1}}, and nine layers
+(\texttt{Layer\textsubscript{1}} to \texttt{Layer\textsubscript{9}}) provide a
+partial method to adapt the base method to each increment one of the other
+counters. Running just the \texttt{layered} method without any layers being
+active thus yields the same behavior as \texttt{method\textsubscript{1}}.
 
 
-In our second benchmark (\copb) we measure the performance impact of layer
-activation. For most \ac{cop} languages, layer activation means updating
-internal data structures with the current layer composition. To quantify this
-impact, we measured the execution time of running five methods
-(\texttt{method$_1$} to \texttt{method$_5$}) in succession that each increment
-one counter. We compare this to the execution time of five partial methods from
+In the second part (\copb) of our first benchmark set, we measure the
+performance impact of layer activation. For most \ac{cop} languages, layer
+activation means updating internal data structures with the current layer
+composition. To quantify this impact, we measured the execution time of running
+five methods (\texttt{method\textsubscript{1}} to
+\texttt{method\textsubscript{5}}) in succession that each increment one
+counter. We compare this to the execution time of five partial methods from
 five layers that implement the same method body, where each layer is activated
 in succession.
 
