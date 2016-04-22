@@ -4,9 +4,10 @@
 \newcolumntype{P}{S[table-format=3.2]<{{\,\si{\percent}}}}
 \begin{table*}
 \centering
-\caption{Bench A raw ratios}
+\caption{\copa. Relative throughput of method execution in \protect\acs{cop} implementations with 0 to 10 layers normalized to the respective non-layered workload. Higher better.}
+\label{tab:copa}
 \smaller
-\begin{tabular}{rPPPPPPP}
+\begin{tabular}{@{}rPPPPPPP@{}}
 \toprule
  & \multicolumn{1}{c}{ContextL} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextPy} & \multicolumn{1}{c}{ContextPy} & \multicolumn{1}{c}{ContextPyPy}\\
  & \multicolumn{1}{c}{~} & \multicolumn{1}{c}{Edge} & \multicolumn{1}{c}{Chrome OSX} & \multicolumn{1}{c}{Chrome Win} & \multicolumn{1}{c}{Python OSX} & \multicolumn{1}{c}{PyPy OSX} & \multicolumn{1}{c}{PyPy OSX}\\
@@ -26,9 +27,10 @@ no activate layer & 67.17 & 0.04 & 0.13 & 0.05 & 4.20 & 347.33 & 441.73 \\
 \end{table*}
 \begin{table*}
 \centering
-\caption{Bench B raw ratios}
+\caption{\copb. Relative throughput of layer activation in \protect\acs{cop} implementations with 0 to 10 layers normalized to the respective non-layered workload. Higher better.}
+\label{tab:copb}
 \smaller
-\begin{tabular}{rPPPPPPP}
+\begin{tabular}{@{}rPPPPPPP@{}}
 \toprule
  & \multicolumn{1}{c}{ContextL} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextJS} & \multicolumn{1}{c}{ContextPy} & \multicolumn{1}{c}{ContextPy} & \multicolumn{1}{c}{ContextPyPy}\\
  & \multicolumn{1}{c}{~} & \multicolumn{1}{c}{Edge} & \multicolumn{1}{c}{Chrome OSX} & \multicolumn{1}{c}{Chrome Win} & \multicolumn{1}{c}{Python OSX} & \multicolumn{1}{c}{PyPy OSX} & \multicolumn{1}{c}{PyPy OSX}\\
@@ -53,23 +55,25 @@ no activate layer & 100.00 & 100.00 & 100.00 & 100.00 & 100.00 & 100.00 & 100.00
 \begin{sidewaystable}
 \centering
 % \begin{table}
-\caption{Raw numbers for the comparison benchmarks (\copa \& copb). \emph{ops} is number of
+\caption{Raw numbers for the comparison benchmarks (\copa \& \copb). \emph{ops} is number of
   operations (higher is better), \emph{time (s)} is time in seconds (lower is
-  better), \emph{ops / s} is number of operations per second (higher is better).}
+  better), \emph{ops / s} is number of operations per second (higher is
+  better).}
+\label{tab:copall}
 % \begin{sideways}
-\smaller\smaller\smaller
+\smaller\smaller
 \sisetup{table-number-alignment = center}
 % \hspace*{-1cm}
 \begin{tabular}{%
-c@{}r
+@{}c@{}r@{\enspace}
+B@{}T@{}B@{\quad}
+B@{}T@{}B@{\quad}
+B@{}T@{}B@{\quad}
+B@{}T@{}B@{\quad}
+B@{}T@{}B@{\quad}
+B@{}T@{}B@{\quad}
 B@{}T@{}B
-B@{}T@{}B
-B@{}T@{}B
-B@{}T@{}B
-B@{}T@{}B
-B@{}T@{}B
-B@{}T@{}B
-}
+@{}}
 \toprule
 	&&\multicolumn{3}{c}{ContextL}&\multicolumn{3}{c}{ContextJS Edge}&\multicolumn{3}{c}{ContextJS Chrome OSX}&\multicolumn{3}{c}{ContextJS Chrome Win}&\multicolumn{3}{c}{ContextPy Python OSX}&\multicolumn{3}{c}{ContextPy PyPy OSX}&\multicolumn{3}{c}{ContextPyPy PyPy OSX} \\ 
 \midrule

@@ -19,8 +19,8 @@
 \newacronym{jit}{\textsc{jit}}{just-in-time}
 \newacronym{vm}{\textsc{vm}}{virtual machine}
 \newacronym{ffi}{\textsc{ffi}}{foreign-function interface}
-\DeclareRobustCommand*\copa{\textsc{cop}\,\oldstylenums{09}\,a\xspace}
-\DeclareRobustCommand*\copb{\textsc{cop}\,\oldstylenums{09}\,b\xspace}
+\DeclareRobustCommand*\copa{\textsc{cop}\kern .12em\oldstylenums{09}\kern .12em a\xspace}
+\DeclareRobustCommand*\copb{\textsc{cop}\kern .12em\oldstylenums{09}\kern .12em b\xspace}
 \DeclareRobustCommand*\deltablue{\textsc{DeltaBlue}\xspace}
 
 \begin{document}
@@ -119,7 +119,7 @@ languages use the host languages meta-programming facilities to redirect method
 dispatch, whereas statically compiled languages require additional compilation
 steps to construct data structures to track layer activation states at
 run-time. Both of these solutions come with considerable performance decrease
-from \SIrange{75}{99}\percent~\cite{appeltauer+:2009:comparison-context-oriented}.
+from \SIrange{75}{99}{\percent}~\cite{appeltauer+:2009:comparison-context-oriented}.
 
 \subsection{Meta-Tracing JIT}
 \label{sec:meta-tracing-jit}
@@ -352,9 +352,8 @@ benchmark (Delta\emph{Purple}) and dynamically composed via layers
 sideways composition functionality without actually using it, we also measured
 DeltaRed with all layers deactivated (Delta\emph{Violet}). We normalize the
 execution time of all four benchmarks to Delta\emph{Blue} on each
-implementation and \ac{vm}. However, we are not interested in the general
-performance improvements of meta-tracing \ac{jit} compilers compared with
-traditional \acp{vm} or \ac{jit} compilers.
+implementation and \ac{vm}. That way, we show the overhead of the \ac{cop}
+implementation rather than mere execution time.
 
 All benchmarks are single-threaded.
 
@@ -367,7 +366,12 @@ All benchmarks are single-threaded.
   \includegraphics[height=6\baselineskip]{bench/malte-a/malte-a-2}
   \includegraphics[height=6\baselineskip]{bench/malte-a/malte-a-4}
   \hss}
-  \caption{\copa}
+\caption{Results of \copa. Relative throughput of method execution in
+  \protect\acs{cop} implementations with (each left to right) 0 to 10 layers
+  normalized to the respective non-layered workload. Higher is better. For raw
+  numbers see \autoref{tab:copa} and \autoref{tab:copall}. (Note
+  the different scales, see \autoref{fig:malte-a-overview} for an overview
+  comparison.)}
   \label{fig:malte-a}
 \end{figure*}
 
@@ -376,13 +380,13 @@ the performance by comparing each ordinary method \texttt{method\textsubscript{i
 execution performance of activating all layers from \texttt{Layer\textsubscript{1}} to
 \texttt{Layer\textsubscript{i}} (which gives the same behavior) and normalizing to the
 ordinary method. As we reported in our previous work, ContextL shows a
-performance degradation ranging from \SIrange{22}{65}\percent. Interestingly, the decrease
+performance degradation ranging from \SIrange{22}{65}{\percent}. Interestingly, the decrease
 in performance does not seem to correspond to the number of active layers,
 likely due to the variability of the optimizations of the underlying Lisp
 \ac{vm}. On the V8 and Chakra JavaScript \acp{vm}, ContextJS incurs a massive
-performance hit of over 99.7\% in all cases (even where no layer is
-active). ContextPy on the Python \ac{vm} is little better with overhead around
-95\%.
+performance hit of over \SI{99.7}{\percent} in all cases, even where no layer is
+active. ContextPy on the Python \ac{vm} is little better with overhead around
+\SI{95}{\percent}.
 
 % TODO ....
 Running ContextPy on the meta-tracing PyPy \ac{vm} ...
@@ -397,7 +401,10 @@ comparable and clearly increases as more layers are activated.
 \begin{figure*}[htb]
   \centering
   \includegraphics[width=\linewidth]{bench/malte-b}
-  \caption{\copb}
+  \caption{Results of \copb. Relative throughput of layer activation in
+  \protect\acs{cop} implementations with (each left to right) 1 to 5 layers
+  normalized to a workload with no layers active whatsoever. Higher is better. For raw
+  numbers see \autoref{tab:copb} and \autoref{tab:copall}.}
   \label{fig:malte-b}
 \end{figure*}
 
@@ -422,7 +429,9 @@ DeltaRed~\idBox{red}{\(+\)}, %
   % \includegraphics[width=.48\linewidth]{bench/DeltaBlue-norm.pdf}
   % \hfil
   % \includegraphics[width=.48\linewidth]{bench/DeltaBlue.pdf}
-  \caption{\deltablue}
+  \caption{Results of \deltablue. Relative execution time of Delta* benchmarks
+    on ContextPy on Python and PyPy; and ContextPyPy. Normalized to DeltaBlue.
+    Lower is better. For raw numbers see \autoref{tab:deltablue-raw}.}
 \end{figure*}
 
 \subsection{Threats to Validity}
@@ -478,7 +487,9 @@ purposes. We greatly appreciate the support of Carl Friedrich Bolz with the
 ContextPy and ContextPyPy implementations.
 \printbibliography
 \appendix
-% \section{Appendix Title}
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+\section{Comprehensive Results}
 \input{deltablue-raw}
 \input{malte-raw}
 \end{document}
