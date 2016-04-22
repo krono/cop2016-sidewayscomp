@@ -157,9 +157,10 @@ method1()
 \end{lstlisting}
 a \ac{cop} implementation typically uses one of the following two strategies:
 \begin{enumerate}
-\item run the lookup for \lstinline|method1()| under the active layers
-  \(\emptyset\) and the lookup for \lstinline|method()| under the active layers
-  \([\)\lstinline|layer1|\(]\), or
+\item lookup \lstinline|method1()| under the composition
+  \(\emptyset\)
+  and lookup \lstinline|method2()| under the composition
+  [\lstinline|layer1|], or
 \item use cached lookup information for \lstinline|method1()|, switch cached
   lookup information due to change in active layers, use (new) cached lookup
   information for \lstinline|method2()|.
@@ -270,13 +271,13 @@ Windows 10.
 
 \paragraph{Implementations} %
 
-We used ContextPy\footnote{\url{https://bitbucket.org/cfbolz/contextpy/}
-  revision 5155cb7.} with Python 2.7.5 and PyPy 5.1 on OS\,X and
+We used ContextPy\footnote{{\smaller\url{https://bitbucket.org/cfbolz/contextpy/}}
+  rev 5155cb7.} with Python 2.7.5 and PyPy 5.1 on OS\,X and
 ContextPyPy\footnote{ContextPy as above but with explicit \emph{promote}.} with
 PyPy 5.1 on OS\,X in both benchmarks. Additionally, for the re-run of the 2009
 benchmark, we used
-ContextJS~\cite{lincke+:2011:open-implementation}\footnote{\url{https://github.com/LivelyKernel/LivelyKernel/tree/master/core/cop}
-  revision 0bd117c.} with V8 (Chrome 50.0.2661.66 beta 64-bit) on OS\,X, Chakra
+ContextJS~\cite{lincke+:2011:open-implementation}\footnote{{\smaller\url{https://github.com/LivelyKernel/LivelyKernel/tree/master/core/cop}}
+  rev 0bd117c.} with V8 (Chrome 50.0.2661.66 beta 64-bit) on OS\,X, Chakra
 (Edge 25.10586) on Windows 10 and V8 (Chrome 49.0.2623.112) on Windows 10; as
 well as LispWorks\textsuperscript{\textregistered} 64-bit 7.0.0 on OS\,X.
 
@@ -300,7 +301,7 @@ provided by the not measured runs.
 For \deltablue (see \autoref{sec:benchmarks}), every benchmark was run 5 times
 uninterrupted in a new process with additional 3 times warm-up prior to
 measurement for PyPy\footnote{Python did not exhibit any warm-up--related
-  differences}. The execution time was always measured \emph{in-system} and,
+  differences/}. The execution time was always measured \emph{in-system} and,
 hence, does not include start-up. We show the arithmetic mean of all runs along
 with bootstrapped~\cite{davison+:1997:confidence-intervals} confidence
 intervals for a \SI{95}{\percent} confidence level.
@@ -434,9 +435,9 @@ DeltaRed~\idBox{red}{\(+\)}, %
     Lower is better. For raw numbers see \autoref{tab:deltablue-raw}.}
 \end{figure*}
 
-\subsection{Threats to Validity}
+% \subsection{Threats to Validity}
 
-OSX: SpeedStep cannot be disabled.
+% OSX: SpeedStep cannot be disabled.
 
 \section{Related Work}
 
