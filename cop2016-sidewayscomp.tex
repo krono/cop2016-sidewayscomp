@@ -85,33 +85,34 @@ PyPy
 
 \section{Introduction}
 
-Sideways composition provides a technique to circumvent some of the limitations
-of static, single inheritance object-oriented systems where multi-dimensional
+Sideways composition provides a technique to avoid some of the limitations of
+static, single inheritance object-oriented systems where multi-dimensional
 composition of behavior is desirable. In particular, \acrlong{cop} applies
-sideways composition to improve modularity.
-
-\ac{cop} as a modularity mechanism to dynamically adapt behavior at run-time has
-been demonstrated to be useful in a variety of scenarios. Beyond its original
-motivation for dynamically adapting systems based on environmental factors such
-as battery level, geolocation, or time of day~\todo{cite}, \ac{cop} has also
-been applied to provide safety in the development of live
+sideways composition to improve modularity. \ac{cop} as a modularity mechanism
+to dynamically adapt behavior at run-time has been demonstrated to be useful in
+a variety of scenarios. Beyond its original motivation for dynamically adapting
+systems based on environmental factors such as battery level, geolocation, or
+time of day~\cite{hirschfeld+:2008:context-oriented-programming}, \ac{cop} has
+also been applied to provide safety in the development of live
 systems~\cite{lincke+:2012:scoping-changes} or to let multiple conflicting
-versions of programming interfaces co-exist~\todo{cite my talk cop 2013}.
+versions of programming interfaces
+co-exist~\cite{felgentreff:2013:tool-building}.
 
-However, as with many abstraction mechanisms, \ac{cop} comes with some overhead,
-a fact that has been repeatedly recognized. By weaving and executing layered
-methods, it violates assumptions of common language implementations and thus
-context layer aware method lookup requires additional operations at
-run-time. Most \ac{cop} extensions to dynamic languages use the host languages
-meta-programming facilities to redirect method dispatch, whereas statically
-compiled languages require additional compilation steps to construct data
-structures to track layer activation states at run-time. Both of these solutions
-come with considerable performance decrease from
+However, as with many abstraction mechanisms, \ac{cop} comes with some
+overhead, a fact that has been repeatedly recognized. By weaving and executing
+layered methods, it violates assumptions of common language implementations and
+thus context layer aware method lookup requires additional operations at
+run-time. Most \ac{cop} implementations in dynamic languages use the host
+language's meta-programming facilities to redirect method dispatch, whereas
+statically compiled languages require additional compilation steps to construct
+data structures to track layer activation states at run-time. Both of these
+solutions come with considerable performance decrease from
 \SIrange{75}{99}{\percent}~\cite{appeltauer+:2009:comparison-context-oriented}.
 
-We argue that \acp{vms} with meta-tracing \ac{jit} compilers can alleviate the
+We argue that \acp{vm} with meta-tracing \ac{jit} compilers can alleviate the
 performance overhead, because their execution model can allows them to optimize
-non-standard lookup. This can be achieved using small hints on the side of the
+non-standard lookup. This can be achieved by explicitly communicating to the
+\ac{jit} complier crucial information using small ``hints'' on the side of the
 \ac{cop} implementation, avoiding a complex architecture to cache and optimize
 lookup.
 
@@ -139,9 +140,9 @@ approach for \ac{jit} compilers is to us \emph{tracing}, that is, recoding the
 steps an interpreter takes to obtain its instruction sequence, a \emph{trace}.
 This trace is subsequently used instead of the interpreter to execute the same
 part of that program~\cite{mitchell:1970:design-construction} at higher speed.
-Native code~\cite{bala+:2000:dynamo:-transparent} as well as object-oriented
-programs~\cite{gal+:2006:hotpathvm:-effective} have already been optimized
-using this technique.
+% Native code~\cite{bala+:2000:dynamo:-transparent} as well as object-oriented
+% programs~\cite{gal+:2006:hotpathvm:-effective} have already been optimized
+% using this technique.
 
 With \emph{meta-tracing} the execution of the interpreter is observed instead
 of the execution of the application program. The resulting traces are therefore
@@ -149,15 +150,15 @@ not specific to the particular application but to the underlying
 interpreter~\cite{bolz+:2009:tracing-meta-level:}. This way, language
 implementers do not have to implement optimized language-specific \ac{jit}
 compilers but rather to provide a straightforward language-specific interpreter
-that is subject to the meta-tracing technique. \emph{Hints} enable
+that is subject to the meta-tracing technique. ``Hints'' enable
 communication with and hence fine-tuning of \ac{jit}
 compiler~\cite{bolz_runtime_2011}.
 
 \section{Faster Sideways Composition with Meta-tracing}
 
 We propose that meta-tracing \ac{jit} compilers can reduce the overhead of
-sideways composition and \ac{cop}, and that \emph{promoting} the composition of
-active layers can reduce the overhead even further.
+sideways composition and \ac{cop}, and that communication the composition of
+active layers to the \ac{jit} compiler can reduce the overhead even further.
 
 \subsection{Employing a Meta-tracing \protect\acs{jit}}
 \Acl{cop} employs sideways composition to inject context-dependent behavioral
@@ -247,14 +248,7 @@ for each encountered composition, and (b) within a given trace, the composition
 wont change and can be relied upon. This assumption now can be made when
 exercising lookup during execution, saving execution time.
 
-
-\section{<<Impl: ContextPy, VM interface, applevel promote>>}
-
-
-%
-\section{Performance Evaluation with \acs{cop}}
-
-\begin{figure*}
+\begin{figure*}[t]
   \centering
   \hbox to \linewidth{\hss
   \includegraphics[height=6\baselineskip]{bench/malte-a/malte-a-3}
@@ -270,6 +264,35 @@ exercising lookup during execution, saving execution time.
   \label{fig:malte-a}
 \end{figure*}
 
+
+\section{ContextPyPy Implementation Outline}
+\begingroup
+\lstset{language=Python}
+
+We briefly describe certain implementation details of ContextPy and how
+``hints'' to the meta-tracing \ac{jit} compiler lead to ContextPyPy.
+
+During development, programmers using ContextPy can annotate methods as being
+advices before/after/around their base methods in a certain layer
+(Layer-in-Class). Using Python annotations, these methods are registered to a
+\emph{descriptor} holding onto all partial method and possibly a base method. That way
+only methods that are layered at least once are affected.
+
+The descriptor, being a Python callable, takes the place of the named method in
+the class and, from this point on, dictates execution and effectively lookup of
+the partial methods. When code calls the method \--- now represented by the
+descriptor \--- the active layer composition is determined. This considers
+globally activated (\lstinline|globalActivateLayer| plus counterpart) layers
+but also layers active in the dynamic extent. For that, a thread local storage
+provides a dynamic scope for the layer composition, which can be affected using
+Python's \lstinline|with| syntax (\lstinline|with activeLayers(myLayer): ...|).
+
+
+
+%
+
+
+\section{Performance Evaluation with \acs{cop}}
 
 
 As described in the introduction, we evaluate the following:
