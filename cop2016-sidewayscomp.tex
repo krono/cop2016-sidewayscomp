@@ -55,15 +55,17 @@
 \maketitle
 
 \begin{abstract}
-  The prevalent way of code sharing in most of the current object systems is
-  static and/or single inheritance, both are limiting. Sideways composition
-  provides a technique to reduce their limitations. \Ac{cop} notably applies
-  sideways composition to achieve better modularity. However, most \ac{cop}
-  implementations have a substantial performance overhead. This is partly
-  because weaving and execution of layered methods violate common assumptions
-  about lookup. Meta-tracing \ac{jit} compiler have unique characteristics that
-  can alleviate the performance overhead, as they can treat lookup
-  differently.\\
+  The prevalent way of code sharing in many current object systems is static
+  and/or single inheritance; both are limiting in situations that call for
+  multi-dimension decomposition. Sideways composition provides a technique to
+  reduce their limitations. \Ac{cop} notably applies sideways composition to
+  achieve better modularity. However, most \ac{cop} implementations have a
+  substantial performance overhead. This is partly because weaving and
+  execution of layered methods violate assumptions that common language
+  implementations hold about lookup. Meta-tracing \ac{jit} compilers have
+  unique characteristics that can alleviate the performance overhead, as they
+  can treat lookup differently.
+
   We suggest that meta-tracing \ac{jit} compilers are good at optimizing
   sideways composition and give initial results. Furthermore, we show that
   explicit communication with the \ac{jit} compiler in a \ac{cop}
