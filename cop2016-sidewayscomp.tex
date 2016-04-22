@@ -66,8 +66,8 @@
   differently.\\
   We suggest that meta-tracing \ac{jit} compilers are good at optimizing
   sideways composition and give initial results. Furthermore, we show that
-  hints for the \ac{jit} compiler in a \ac{cop} implementation can improve
-  performance further.
+  explicit communication with the \ac{jit} compiler in a \ac{cop}
+  implementation can improve performance further.
   \end{abstract}
 
 \category{D.3.3}{Programming Languages}{Language Constructs and Features}
@@ -93,12 +93,15 @@ In this work, we make the following contributions and show
   present in most \ac{cop} implementations;
 \item that meta-tracing--based \ac{jit} compilation can reduce the
   overhead of sideways composition; and
-\item that communicating the active layer composition \emph{explicitely} to the
+\item that communicating the active layer composition \emph{explicitly} to the
   \ac{jit} compiler can further reduce the overhead of sideways composition.
 \end{itemize}
 
 
-\section{<<Background: COP, COPSurvey, MetaTracing>>}
+\section{\protect\Acs{cop} and Meta-tracing \acs{jit} Compilers}
+
+We briefly describe the performance impact of \ac{cop} implementations and
+introduce meta-tracing \ac{jit} compilers.
 
 \subsection{The Performance of \acs{cop}}
 \label{sec:performance-cop}
@@ -110,7 +113,7 @@ been applied to provide safety in the development of live
 systems~\cite{lincke+:2012:scoping-changes} or to let multiple conflicting
 versions of programming interfaces co-exist~\todo{cite my talk cop 2013}.
 
-~\cite{lincke+:2011:implementing-scoped}
+% ~\cite{lincke+:2011:implementing-scoped}
 
 However, as with many abstraction mechanisms, \ac{cop} comes with some overhead,
 a fact that has been repeatedly recognized. Context layer aware method lookup
@@ -121,16 +124,40 @@ steps to construct data structures to track layer activation states at
 run-time. Both of these solutions come with considerable performance decrease
 from \SIrange{75}{99}{\percent}~\cite{appeltauer+:2009:comparison-context-oriented}.
 
-\subsection{Meta-Tracing JIT}
+
+\subsection{Meta-tracing Just-In-\kern-0.12emTime Compilers}
 \label{sec:meta-tracing-jit}
 
-\section{<<Solution: Sideways-composition and metatracing>>}
+\Acf{jit} compilation is one of the most used technique for speeding up the
+execution of programs at run-time. Many language implementations have yet
+benefitted from \ac{jit} compilers, including but not limited to today's
+popular languages such as Java~\cite{paleczny+:2001:java-hotspot} or
+JavaScript~\cite{holtta:2013:crankshafting-from}. A particular implementation
+approach for \ac{jit} compilers is to us \emph{tracing}, that is, recoding the
+steps an interpreter takes to obtain its instruction sequence, a \emph{trace}.
+This trace is subsequently used instead of the interpreter to execute the same
+part of that program~\cite{mitchell:1970:design-construction} at higher speed.
+Native code~\cite{bala+:2000:dynamo:-transparent} as well as object-oriented
+programs~\cite{gal+:2006:hotpathvm:-effective} have already been optimized
+using this technique.
+
+With \emph{meta-tracing} the execution of the interpreter is observed instead
+of the execution of the application program. The resulting traces are therefore
+not specific to the particular application but to the underlying
+interpreter~\cite{bolz+:2009:tracing-meta-level:}. This way, language
+implementers do not have to implement optimized language-specific \ac{jit}
+compilers but rather to provide a straightforward language-specific interpreter
+that is subject to the meta-tracing technique. \emph{Hints} enable
+communication with and hence fine-tuning of \ac{jit}
+compiler~\cite{bolz_runtime_2011}.
+
+\section{Faster Sideways Composition with Meta-tracing}
 
 We propose that meta-tracing \ac{jit} compilers can reduce the overhead of
 sideways composition and \ac{cop}, and that \emph{promoting} the composition of
 active layers can reduce the overhead even further.
 
-\subsection{Employing a meta-tracing \protect\acs{jit}}
+\subsection{Employing a Meta-tracing \protect\acs{jit}}
 \Acl{cop} employs sideways composition to inject context-dependent behavioral
 changes into an existing hierarchy of behavior. These hierarchies are typically
 defined by the static and/or single inheritance of object systems. These
@@ -186,7 +213,7 @@ Therefore, the actual \ac{cop} implementation does not have to manage the
 caching information when altering the lookup information, saving both execution
 time and implementation complexity.
 
-\subsection{Promoting the compositions of active layers}
+\subsection{Promoting the Compositions of Active Layers}
 
 The compositions of active layers is crucially important for the lookup in
 \ac{cop}, and all strategies above reflect this. However, only the
