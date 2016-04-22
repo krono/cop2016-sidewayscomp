@@ -85,11 +85,10 @@ PyPy
 
 \section{Introduction}
 
-\begin{itemize}
-\item Sideways composition is the way out
-\item SC with cop helps modularity, desirable (cf. 2.1)
-\item But slow.
-\end{itemize}
+Sideways composition provides a technique to circumvent some of the limitations
+of static, single inheritance object-oriented systems where multi-dimensional
+composition of behavior is desirable. In particular, \acrlong{cop} applies
+sideways composition to improve modularity.
 
 \ac{cop} as a modularity mechanism to dynamically adapt behavior at run-time has
 been demonstrated to be useful in a variety of scenarios. Beyond its original
@@ -99,20 +98,22 @@ been applied to provide safety in the development of live
 systems~\cite{lincke+:2012:scoping-changes} or to let multiple conflicting
 versions of programming interfaces co-exist~\todo{cite my talk cop 2013}.
 
-% ~\cite{lincke+:2011:implementing-scoped}
-
 However, as with many abstraction mechanisms, \ac{cop} comes with some overhead,
-a fact that has been repeatedly recognized. Context layer aware method lookup
-requires additional operations at run-time. Most \ac{cop} extensions to dynamic
-languages use the host languages meta-programming facilities to redirect method
-dispatch, whereas statically compiled languages require additional compilation
-steps to construct data structures to track layer activation states at
-run-time. Both of these solutions come with considerable performance decrease
-from \SIrange{75}{99}{\percent}~\cite{appeltauer+:2009:comparison-context-oriented}.
+a fact that has been repeatedly recognized. By weaving and executing layered
+methods, it violates assumptions of common language implementations and thus
+context layer aware method lookup requires additional operations at
+run-time. Most \ac{cop} extensions to dynamic languages use the host languages
+meta-programming facilities to redirect method dispatch, whereas statically
+compiled languages require additional compilation steps to construct data
+structures to track layer activation states at run-time. Both of these solutions
+come with considerable performance decrease from
+\SIrange{75}{99}{\percent}~\cite{appeltauer+:2009:comparison-context-oriented}.
 
-\begin{itemize}
-\item .x
-\end{itemize}
+We argue that \acp{vms} with meta-tracing \ac{jit} compilers can alleviate the
+performance overhead, because their execution model can allows them to optimize
+non-standard lookup. This can be achieved using small hints on the side of the
+\ac{cop} implementation, avoiding a complex architecture to cache and optimize
+lookup.
 
 % \paragraph*{Contributions}
 
@@ -557,8 +558,22 @@ architecture.
 
 \section{Conclusion and Future Work}
 
+Our first results for using meta-tracing \ac{jit} optimizations to reduce the
+performance impact of \ac{cop} are promising for micro benchmarks. The
+meta-tracing \ac{jit} compiler of PyPy appears to be effective at eliminating
+the overhead of sideways composition for method lookup. Our results also show
+that a few, carefully placed hints can help the runtime to improve this effect,
+too.
 
-<<Promising first results, application to other stuff necessary>>
+For future work we have to further investigate how careful one has to be in
+placing those hints and how the performance behavior changes with larger
+applications. Our results with a larger benchmark indicate that the approach is
+viable, but so far the performance is less than we had hoped for. Nonetheless
+the fact that we see no overhead with our approach for executing layered methods
+when no or only one layer is active and the layer composition does not change
+already shows that \ac{cop} can be enabled in a language without paying a
+performance penalty. We think this result in itself is important for to argue
+for wider adoption of sideways composition mechanisms like \ac{cop}.
 
 \acks
 We gratefully acknowledge the financial support of HPI's Research School and
