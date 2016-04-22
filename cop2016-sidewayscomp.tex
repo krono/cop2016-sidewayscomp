@@ -121,22 +121,6 @@ steps to construct data structures to track layer activation states at
 run-time. Both of these solutions come with considerable performance decrease
 from \SIrange{75}{99}\percent~\cite{appeltauer+:2009:comparison-context-oriented}.
 
-So far, attempts to apply traditional compiler and optimization techniques have
-proven to be difficult and can only reduce the performance overhead in some
-cases. A common approach is to shift the performance impact to the layer
-activation time. ContextAmber~\cite{springer2015efficient} optimistically
-flattens layered methods when the layer composition changes to achieve near
-native performance during execution. An extension to the C++ configuration
-management system Elektra~\cite{Raab:2014:PEE:2637066.2637074} make use of
-extensive code generation and caching of the active layer composition to
-minimize the performance impact of running with active layers in a tight
-loop. Both approaches nearly eliminate the performance impact of layers when the
-composition changes rarely, but at the cost of reduced performance for
-applications where the layer composition may change frequently. \ac{vm}
-facilities such as Java's INVOKEDYNAMIC instruction provide only minimally
-improved performance compared to an implementation using language-level caching
-facilities, albeit using less code and a simplified architecture.
-
 \subsection{Meta-Tracing JIT}
 \label{sec:meta-tracing-jit}
 
@@ -446,6 +430,40 @@ DeltaRed~\idBox{red}{\(+\)}, %
 OSX: SpeedStep cannot be disabled.
 
 \section{Related Work}
+
+Other implementations of \acrlong{cop} have tried to optimize their
+implementations using traditional compiler and optimization techniques. However,
+while they can only reduce the performance overhead in some cases, they are
+sometimes difficult to apply and increase the complexity of the system. A common
+optimization approach is to shift the performance impact to the layer activation
+time under the assumption the changes in layer composition are comparatively
+rarer than execution of layered methods. This approach can drastically limit the
+performance impact of layers when the composition changes rarely, but at the
+cost of reduced performance for applications where the layer composition may
+change frequently.
+
+Instances where this optimization is used are ContextAmber, Elektra, and
+cj. ContextAmber~\cite{springer2015efficient} optimistically flattens layered
+methods when the layer composition changes to achieve near native performance
+during execution. An extension to the C++ configuration management system
+Elektra~\cite{Raab:2014:PEE:2637066.2637074} make use of extensive code
+generation and caching of the active layer composition to minimize the
+performance impact of running with active layers in a tight loop. The
+cj\cite{schippers2009implementation,schippers2008delegation} system that
+implements \ac{cop} on top of the delMDSOC virtual machine model. This model is
+well suited towards multi-dimensional dispatch, and thus a \ac{cop}
+implementation on top of it achieves good performance in this case. However, as
+with the other two approaches, switching layers becomes more expensive as a
+result.
+
+Another approach at optimizing \ac{cop} that is closer to the work presented
+here is to use facilities of general purpose \acp{vm} directly. One such
+facility is Java's INVOKEDYNAMIC instruction that allows language extensions to
+implement new lookup semantics for the Java \ac{vm}. However, prior
+work~\cite{appeltauer2010layered} indicates that this extension point may
+provide only minimally improved performance compared to an implementation using
+language-level caching facilities, albeit using less code and a simplified
+architecture.
 
 \section{<<Conclusion/FW: Promising first results, application to other stuff necessary>>}
 
