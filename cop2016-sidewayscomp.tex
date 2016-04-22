@@ -57,7 +57,7 @@
 \begin{abstract}
   The prevalent way of code sharing in many current object systems is static
   and/or single inheritance; both are limiting in situations that call for
-  multi-dimension decomposition. Sideways composition provides a technique to
+  multi-dimensional decomposition. Sideways composition provides a technique to
   reduce their limitations. \Ac{cop} notably applies sideways composition to
   achieve better modularity. However, most \ac{cop} implementations have a
   substantial performance overhead. This is partly because weaving and
@@ -111,7 +111,7 @@ solutions come with considerable performance decrease from
 
 We argue that \acp{vm} with meta-tracing \ac{jit} compilers can alleviate the
 performance overhead, because their execution model can allows them to optimize
-non-standard lookup. This can be achieved by explicitly communicating to the
+non-standard lookup. This can be achieved by explicitly telling the
 \ac{jit} complier crucial information using small ``hints'' on the side of the
 \ac{cop} implementation, avoiding a complex architecture to cache and optimize
 lookup.
@@ -124,7 +124,7 @@ In this work, we make the following contributions and show
   present in most \ac{cop} implementations;
 \item that meta-tracing--based \ac{jit} compilation can reduce the
   overhead of sideways composition; and
-\item that communicating the active layer composition \emph{explicitly} to the
+\item that telling the active layer composition \emph{explicitly} to the
   \ac{jit} compiler can further reduce the overhead of sideways composition.
 \end{itemize}
 
@@ -152,13 +152,13 @@ implementers do not have to implement optimized language-specific \ac{jit}
 compilers but rather to provide a straightforward language-specific interpreter
 that is subject to the meta-tracing technique. ``Hints'' enable
 communication with and hence fine-tuning of \ac{jit}
-compiler~\cite{bolz_runtime_2011}.
+compiler~\cite{bolz+:2011:runtime-feedback}.
 
 \section{Faster Sideways Composition with Meta-tracing}
 
 We propose that meta-tracing \ac{jit} compilers can reduce the overhead of
-sideways composition and \ac{cop}, and that communication the composition of
-active layers to the \ac{jit} compiler can reduce the overhead even further.
+sideways composition and \ac{cop}, possibly more so when telling the
+active layer composition to the \ac{jit} compiler.
 
 \subsection{Employing a Meta-tracing \protect\acs{jit}}
 \Acl{cop} employs sideways composition to inject context-dependent behavioral
@@ -178,7 +178,7 @@ lookup may change. Execution environments typically have to decide, whether to
 always re-exercise the lookup for every method under the active layers, or
 cache (and invalidate) lookup information when the composition of active layers
 changes. For example in the sequence
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
 -- active layers: §\(\emptyset\)§
 method1()
   activate(layer1)
@@ -211,21 +211,21 @@ certain different composition has been encountered often enough at the guard,
 the meta-tracing \ac{jit} compiler will introduce a \emph{bridge} into a new
 part of a trace, in which \emph{this} different composition can be assumed not
 to change, and lookup can be optimized accordingly. Note that this resembles
-strategy 2 above, but is implicit and actually guided by the \ac{jit} compiler.
-Therefore, the actual \ac{cop} implementation does not have to manage the
-caching information when altering the lookup information, saving both execution
-time and implementation complexity.
+strategy 2 above, but is implicit and guided by the \ac{jit} compiler.
+Therefore, the \ac{cop} implementation does not have to manage the caching
+information when altering the lookup information, saving both execution time
+and implementation complexity.
 
 \subsection{Promoting the Compositions of Active Layers}
+\label{sec:prom-comp-active}
 
 The compositions of active layers is crucially important for the lookup in
 \ac{cop}, and all strategies above reflect this. However, only the
-language-level implementation of \ac{cop} actually knows about the
-composition's importance, and even for meta-tracing \ac{jit} compiler's
-strategy, the \ac{jit} compiler first hast to become aware of the fact that the
-composition is \--- indeed \--- important for its trace. Yet, the \ac{jit}
-compile can only apply heuristics to identify the composition as
-trace-important.
+language-level implementation of \ac{cop} knows about the composition's
+importance, and even for meta-tracing \ac{jit} compiler's strategy, the
+\ac{jit} compiler first hast to become aware of the fact that the composition
+\emph{is} important for its trace. Yet, the \ac{jit} compiler has to apply
+heuristics to identify the composition as trace-important.
 
 This situation is commonly known when implementing \acp{vm} that use a
 meta-tracing \ac{jit} compiler. Based on the value of a certain object it may
@@ -233,7 +233,7 @@ be desirable to \emph{specialize} traces to these values (essentially what
 happened above with the guard and the bridge).
 Implementers can chose to \emph{promote}~\cite[\S
 3.1]{bolz+:2011:runtime-feedback} such an object and the \ac{jit} compiler will
-ensure that traces are actually specialized to the object's values,  regardless
+ensure that traces are specialized to the object's values,  regardless
 of wether the \ac{jit} compiler's \emph{heuristics} would result in the same
 specialization or not. If applied carefully, this promotion can decrease
 execution time.
@@ -267,27 +267,50 @@ exercising lookup during execution, saving execution time.
 
 \section{ContextPyPy Implementation Outline}
 \begingroup
-\lstset{language=Python}
+\lstset{language=Python,basicstyle=\footnotesize\ttfamily}
 
 We briefly describe certain implementation details of ContextPy and how
-``hints'' to the meta-tracing \ac{jit} compiler lead to ContextPyPy.
+``hints'' to the meta-tracing \ac{jit} compiler lead to
+ContextPyPy.
+% \footnote{ContextPy was originally developed by Christian Schubert
+%   and Michael Perscheid; the most recent version as well as ContextPyPy was
+%   largely shaped by Carl Friedrich Bolz.}.
 
 During development, programmers using ContextPy can annotate methods as being
 advices before/after/around their base methods in a certain layer
 (Layer-in-Class). Using Python annotations, these methods are registered to a
-\emph{descriptor} holding onto all partial method and possibly a base method. That way
-only methods that are layered at least once are affected.
-
-The descriptor, being a Python callable, takes the place of the named method in
-the class and, from this point on, dictates execution and effectively lookup of
-the partial methods. When code calls the method \--- now represented by the
-descriptor \--- the active layer composition is determined. This considers
-globally activated (\lstinline|globalActivateLayer| plus counterpart) layers
-but also layers active in the dynamic extent. For that, a thread local storage
-provides a dynamic scope for the layer composition, which can be affected using
+\emph{descriptor} holding onto all partial method and possibly a base method.
+That way only methods that are layered at least once are affected. The
+descriptor, being a Python callable, takes the place of the named method in the
+class and, from this point on, dictates execution and effectively lookup of the
+partial methods. When code calls the method \--- now represented by the
+descriptor \--- the active layer composition is determined, considering
+globally activated (\lstinline|globalActivateLayer| plus counterpart)
+but also dynamically active layers. For that, a thread local storage
+provides a dynamically scoped layer composition, which can be affected using
 Python's \lstinline|with| syntax (\lstinline|with activeLayers(myLayer): ...|).
+Based on that composition, a partial method ordering is determined and cached
+using the composition as key. This is a simple optimization most other \ac{cop}
+implementations also use. Then, the first method of the ordering is executed.
+The global function \lstinline|proceed()| inspects the descriptors ordering to
+determine the next method to be executed.
 
+As described in \autoref{sec:prom-comp-active}, it is desirable to have one
+trace per layer composition, which the heuristics typically provide. However,
+with recent PyPy, we can tell this directly to the \ac{jit} compiler. Moreover,
+we are interested in the method ordering \emph{resulting} from the layer
+composition to know what method to execute next. Therefore, in ContextPyPy, the
+method ``talking'' to the \ac{jit} \emph{promotes} this ordering:
+\begin{lstlisting}[morekeywords={promote}]
+def get_or_build_methods(self):
+  if self.layer_composition_unchanged():
+    return promote(self.last_ordering)
+  layer_composition = _baselayers + _tls.activelayers
+  last_ordering = self.method_ordering(layer_composition)
+  return last_ordering
+\end{lstlisting}
 
+\endgroup
 
 %
 
@@ -470,7 +493,7 @@ around \SI{95}{\percent}.
 
 Running ContextPy on PyPy, that is, using a meta-tracing \ac{jit} compiler,
 yields vastly different results. Against the trend of the other
-implementation/platform combinations, using \ac{cop} layers can actually
+implementation/platform combinations, using \ac{cop} layers can
 \emph{increase} performance. When just layers are present but not activated,
 ContextPy on PyPy can gain a \(3.5\times\) speedup and ContextPyPy even over
 \(4\times\). Compared with ContextPy on Python, the relative performance
@@ -563,7 +586,7 @@ during execution. An extension to the C++ configuration management system
 Elektra~\cite{Raab:2014:PEE:2637066.2637074} make use of extensive code
 generation and caching of the active layer composition to minimize the
 performance impact of running with active layers in a tight loop. The
-cj\cite{schippers2009implementation,schippers2008delegation} system that
+cj~\cite{schippers2009implementation,schippers2008delegation} system that
 implements \ac{cop} on top of the delMDSOC virtual machine model. This model is
 well suited towards multi-dimensional dispatch, and thus a \ac{cop}
 implementation on top of it achieves good performance in this case. However, as
@@ -572,7 +595,7 @@ result.
 
 Another approach at optimizing \ac{cop} that is closer to the work presented
 here is to use facilities of general purpose \acp{vm} directly. One such
-facility is Java's INVOKEDYNAMIC instruction that allows language extensions to
+facility is Java's \textsc{invokedynamic} instruction that allows language extensions to
 implement new lookup semantics for the Java \ac{vm}. However, prior
 work~\cite{appeltauer2010layered} indicates that this extension point may
 provide only minimally improved performance compared to an implementation using
@@ -607,7 +630,9 @@ LispWorks Ltd. kindly provided an evaluation license of
 LispWorks\textsuperscript{\textregistered} 64-bit for Mac OS\,X for testing
 purposes. We greatly appreciate the support of Carl Friedrich Bolz with the
 ContextPy and ContextPyPy implementations.
-\printbibliography
+
+{\smaller\printbibliography}
+
 \appendix
 \counterwithin{figure}{section}
 \counterwithin{table}{section}
