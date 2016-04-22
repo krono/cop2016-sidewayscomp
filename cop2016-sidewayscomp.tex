@@ -222,7 +222,25 @@ exercising lookup during execution, saving execution time.
 \section{<<Impl: ContextPy, VM interface, applevel promote>>}
 
 
+%
 \section{Performance Evaluation with \acs{cop}}
+
+\begin{figure*}
+  \centering
+  \hbox to \linewidth{\hss
+  \includegraphics[height=6\baselineskip]{bench/malte-a/malte-a-3}
+  \includegraphics[height=6\baselineskip]{bench/malte-a/malte-a-2}
+  \includegraphics[height=6\baselineskip]{bench/malte-a/malte-a-4}
+  \hss}
+\caption{Results of \copa. Relative throughput of method execution in
+  \protect\acs{cop} implementations with (each left to right) 0 to 10 layers
+  normalized to the respective non-layered workload. Higher is better. For raw
+  numbers see \autoref{tab:copa} and \autoref{tab:copall}. (Note
+  the different scales, see \autoref{fig:malte-a-overview} for an overview
+  comparison.)}
+  \label{fig:malte-a}
+\end{figure*}
+
 
 
 As described in the introduction, we evaluate the following:
@@ -344,36 +362,44 @@ five layers that implement the same method body, where each layer is activated
 in succession.
 
 
+\def\idBox#1#2{%
+\setlength{\fboxsep}{1pt}%
+% \colorbox[HTML]{#1}{\textcolor[gray]{0.9}{\rule[0.1pt]{0pt}{5pt}#2}}%
+\colorbox{#1}{\textcolor[gray]{0.9}{\rule[0.1pt]{0pt}{5pt}#2}}%
+\xspace}
+% DeltaBlue~\idBox{blue}{\(\circ\)}, %
+% DeltaPurple ~\idBox{purple}{\(\bigtriangleup\)}, %
+% DeltaViolet ~\idBox{violet}{\(\square\)}, %
+% DeltaRed~\idBox{red}{\(+\)}, %
+%  % ~\idBox{}{\(\boxtimes\)}, %
+%  % ~\idBox{E41A1C}{\(\)}, %
+
 Our second benchmark (\deltablue) measures the relative overhead of sideways
 composition on a more wide-spread benchmark, DeltaBlue. For that, we augmented
 DeltaBlue with additional functionality (reversed lists for storage, count of
 constraint executions and binary constraints), both statically added to the
-benchmark (Delta\emph{Purple}) and dynamically composed via layers
-(Delta\emph{Red}). To measure the overhead of the mere presence of dynamic
-sideways composition functionality without actually using it, we also measured
-DeltaRed with all layers deactivated (Delta\emph{Violet}). We normalize the
-execution time of all four benchmarks to Delta\emph{Blue} on each
-implementation and \ac{vm}. That way, we show the overhead of the \ac{cop}
-implementation rather than mere execution time.
+benchmark (Delta\emph{Purple}~\idBox{purple}{\(\bigtriangleup\)})
+and dynamically composed via layers (Delta\emph{Red}~\idBox{red}{\(+\)}).
+To measure the overhead of the mere presence of dynamic sideways composition
+functionality without actually using it, we also measured DeltaRed with all
+layers deactivated (Delta\emph{Violet} ~\idBox{violet}{\(\square\)}).
+We normalize the execution time of all four benchmarks to
+Delta\emph{Blue}~\idBox{blue}{\(\circ\)}
+on each implementation and \ac{vm}. That way, we show the overhead of the
+\ac{cop} implementation rather than mere execution time.
 
-All benchmarks are single-threaded.
+% All benchmarks are single-threaded.
 
 \subsection{Results}
 
-\begin{figure*}[htb]
+\begin{figure*}
   \centering
-  \hbox to \linewidth{\hss
-  \includegraphics[height=6\baselineskip]{bench/malte-a/malte-a-3}
-  \includegraphics[height=6\baselineskip]{bench/malte-a/malte-a-2}
-  \includegraphics[height=6\baselineskip]{bench/malte-a/malte-a-4}
-  \hss}
-\caption{Results of \copa. Relative throughput of method execution in
-  \protect\acs{cop} implementations with (each left to right) 0 to 10 layers
-  normalized to the respective non-layered workload. Higher is better. For raw
-  numbers see \autoref{tab:copa} and \autoref{tab:copall}. (Note
-  the different scales, see \autoref{fig:malte-a-overview} for an overview
-  comparison.)}
-  \label{fig:malte-a}
+  \includegraphics[width=\linewidth]{bench/malte-b}
+  \caption{Results of \copb. Relative throughput of layer activation in
+    \protect\acs{cop} implementations with (each left to right) 1 to 5 layers
+    normalized to a workload with no layers active whatsoever. Higher is
+    better. For raw numbers see \autoref{tab:copb} and \autoref{tab:copall}.}
+  \label{fig:malte-b}
 \end{figure*}
 
 The results of the \copa benchmark are shown in \autoref{fig:malte-a}. We
@@ -412,47 +438,55 @@ ContextPyPy suggest that communicating layer information properly can vastly
 improve this effect, too.
 %
 
-The results of this benchmark are shown in \autoref{fig:malte-b}. The
+\medskip\noindent %
+The results of the \copb benchmark are shown in \autoref{fig:malte-b}. The
 performance impact for layer activation for each of the tested systems is
-comparable and clearly increases as more layers are activated.
-% TODO ....
+comparable and clearly increases as more layers are activated. Moreover,
+ContextPy on Python \--- the only implementation/platform combination without
+\ac{jit} or \ac{jit}-like optimizations \--- exhibits the least severe impact
+with increasing layers.
 
-\begin{figure*}[htb]
-  \centering
-  \includegraphics[width=\linewidth]{bench/malte-b}
-  \caption{Results of \copb. Relative throughput of layer activation in
-  \protect\acs{cop} implementations with (each left to right) 1 to 5 layers
-  normalized to a workload with no layers active whatsoever. Higher is better. For raw
-  numbers see \autoref{tab:copb} and \autoref{tab:copall}.}
-  \label{fig:malte-b}
-\end{figure*}
-
-\def\idBox#1#2{%
-\setlength{\fboxsep}{1pt}%
-% \colorbox[HTML]{#1}{\textcolor[gray]{0.9}{\rule[0.1pt]{0pt}{5pt}#2}}%
-\colorbox{#1}{\textcolor[gray]{0.9}{\rule[0.1pt]{0pt}{5pt}#2}}%
-\xspace}
-
-
-DeltaBlue~\idBox{blue}{\(\circ\)}, %
-DeltaPurple ~\idBox{purple}{\(\bigtriangleup\)}, %
-DeltaViolet ~\idBox{violet}{\(\square\)}, %
-DeltaRed~\idBox{red}{\(+\)}, %
- % ~\idBox{}{\(\boxtimes\)}, %
- % ~\idBox{E41A1C}{\(\)}, %
-
+\paragraph{Discussion} The meta-tracing \ac{jit} compiler of PyPy seems to have
+to invalidate assumptions on layer activations, possibly not being able to
+re-use certain traces. The results of ContextPyPy suggest that the current way
+of communicating layer information to the meta-tracing \ac{jit} compiler in
+fact can also hamper optimizations, that is, such \emph{hints} have to
+be used with great care.
 
 \begin{figure*}
   \centering
-  \includegraphics[width=.7\linewidth]{bench/DeltaBlue-norm.pdf}
+  \includegraphics[width=.66\linewidth]{bench/DeltaBlue-norm.pdf}
   % \includegraphics[width=.48\linewidth]{bench/DeltaBlue-norm.pdf}
   % \hfil
   % \includegraphics[width=.48\linewidth]{bench/DeltaBlue.pdf}
   \caption{Results of \deltablue. Relative execution time of Delta\ldots benchmarks
     on ContextPy on Python and PyPy; and ContextPyPy. Normalized to DeltaBlue.
     Lower is better. For raw numbers see \autoref{tab:deltablue-raw}.}
+  \label{fig:deltablue}
 \end{figure*}
 
+\medskip\noindent %
+The results of the \deltablue benchmark are shown in \autoref{fig:deltablue}.
+Expectedly, the additional workload of DeltaPurple over DeltaBlue is comparable
+across all three implementation/platform combinations. However, the mere
+presence of layered methods (DeltaViolet) has a comparatively high impact on
+Python, with up to \(3\times\)
+slowdown. At the same time, virtually no overhead is present on PyPy for
+DeltaViolet. The overhead of activated layers (DeltaRed) is quite severe on
+Python, ranging about \(5\times\)
+of DeltaPurple, whereas on PyPy the slowdown is less than \SI{50}{\percent}
+(\(\approx 1.4\times\)). ContextPyPy performs virtually the same as ContextPy
+on PyPy.
+
+\paragraph{Discussion} \deltablue, being a less ``micro'' benchmark, reinforces
+the impression of \copa than the meta-tracing \ac{jit} compiler of PyPy is
+effective at eliminating the overhead of sideways composition. Especially the
+no-layers-activated case having no overhead seems important for wider adoption.
+Seeing \copa and \copb, the indifference between ContextPy on PyPy and
+ContextPyPy is unexpected, both the missing speedup from \copa and the missing
+slowdown from \copb. However, the slowdown of \copb is neither present for
+ContextPy on PyPy, suggesting that ContextPyPy's \emph{promote} approach could
+be nevertheless viable to use.
 % \subsection{Threats to Validity}
 
 % OSX: SpeedStep cannot be disabled.
@@ -493,7 +527,10 @@ provide only minimally improved performance compared to an implementation using
 language-level caching facilities, albeit using less code and a simplified
 architecture.
 
-\section{<<Conclusion/FW: Promising first results, application to other stuff necessary>>}
+\section{Conclusion and Future Work}
+
+
+<<Promising first results, application to other stuff necessary>>
 
 \acks
 We gratefully acknowledge the financial support of HPI's Research School and
