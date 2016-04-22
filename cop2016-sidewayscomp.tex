@@ -376,23 +376,41 @@ All benchmarks are single-threaded.
   \label{fig:malte-a}
 \end{figure*}
 
-The results of the \copa benchmark are shown in \autoref{fig:malte-a}. We evaluated
-the performance by comparing each ordinary method \texttt{method\textsubscript{i}} with the
-execution performance of activating all layers from \texttt{Layer\textsubscript{1}} to
-\texttt{Layer\textsubscript{i}} (which gives the same behavior) and normalizing to the
-ordinary method. As we reported in our previous work, ContextL shows a
-performance degradation ranging from \SIrange{22}{65}{\percent}. Interestingly, the decrease
-in performance does not seem to correspond to the number of active layers,
-likely due to the variability of the optimizations of the underlying Lisp
-\ac{vm}. On the V8 and Chakra JavaScript \acp{vm}, ContextJS incurs a massive
-performance hit of over \SI{99.7}{\percent} in all cases, even where no layer is
-active. ContextPy on the Python \ac{vm} is little better with overhead around
-\SI{95}{\percent}.
+The results of the \copa benchmark are shown in \autoref{fig:malte-a}. We
+evaluated the performance by comparing each ordinary method
+\texttt{method\textsubscript{i}} with the execution performance of activating
+all layers from \texttt{Layer\textsubscript{1}} to
+\texttt{Layer\textsubscript{i}} (which gives the same behavior) and normalizing
+to the ordinary method. As we reported in our previous work, ContextL shows a
+performance degradation ranging from \SIrange{22}{65}{\percent}. Interestingly,
+the decrease in performance does not seem to correspond to the number of active
+layers, likely due to the variability of the optimizations of the underlying
+Lisp \ac{vm}. On the V8 and Chakra JavaScript \acp{vm}, ContextJS incurs a
+massive performance hit of over \SI{99.7}{\percent} in all cases, even where no
+layer is active. ContextPy on the Python \ac{vm} is little better with overhead
+around \SI{95}{\percent}.
 
-% TODO ....
-Running ContextPy on the meta-tracing PyPy \ac{vm} ...
+Running ContextPy on PyPy, that is, using a meta-tracing \ac{jit} compiler,
+yields vastly different results. Against the trend of the other
+implementation/platform combinations, using \ac{cop} layers can actually
+\emph{increase} performance. When just layers are present but not activated,
+ContextPy on PyPy can gain a \(3.5\times\) speedup and ContextPyPy even over
+\(4\times\). Compared with ContextPy on Python, the relative performance
+difference is up to two orders of magnitude improved.
 
+Moreover, ContextPyPy manages to retain a speedup of at least \(2\times\)
+over the non-layered version up to three active layers, exhibiting only minor
+slowdown for four to six active layers. After that, the performance levels up
+with ContextPy on PyPy. We attribute the latter, rather steep decline in
+performance to how the meta-tracing \ac{jit} compiler handles rather long
+traces that can occur with an increasing number of active layers and which are
+yet to be investigated.
 
+\paragraph{Discussion} The meta-tracing \ac{jit} compiler of PyPy appears to be
+effective at eliminating the overhead of sideways composition. The results of
+ContextPyPy suggest that communicating layer information properly can vastly
+improve this effect, too.
+%
 
 The results of this benchmark are shown in \autoref{fig:malte-b}. The
 performance impact for layer activation for each of the tested systems is
@@ -430,7 +448,7 @@ DeltaRed~\idBox{red}{\(+\)}, %
   % \includegraphics[width=.48\linewidth]{bench/DeltaBlue-norm.pdf}
   % \hfil
   % \includegraphics[width=.48\linewidth]{bench/DeltaBlue.pdf}
-  \caption{Results of \deltablue. Relative execution time of Delta* benchmarks
+  \caption{Results of \deltablue. Relative execution time of Delta\ldots benchmarks
     on ContextPy on Python and PyPy; and ContextPyPy. Normalized to DeltaBlue.
     Lower is better. For raw numbers see \autoref{tab:deltablue-raw}.}
 \end{figure*}
