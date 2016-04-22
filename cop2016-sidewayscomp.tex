@@ -85,28 +85,12 @@ PyPy
 
 \section{Introduction}
 
-
-
-% \paragraph*{Contributions}
-
-In this work, we make the following contributions and show
 \begin{itemize}
-\item that the performance overhead of sideways composition is still
-  present in most \ac{cop} implementations;
-\item that meta-tracing--based \ac{jit} compilation can reduce the
-  overhead of sideways composition; and
-\item that communicating the active layer composition \emph{explicitly} to the
-  \ac{jit} compiler can further reduce the overhead of sideways composition.
+\item Sideways composition is the way out
+\item SC with cop helps modularity, desirable (cf. 2.1)
+\item But slow.
 \end{itemize}
 
-
-\section{\protect\Acs{cop} and Meta-tracing \acs{jit} Compilers}
-
-We briefly describe the performance impact of \ac{cop} implementations and
-introduce meta-tracing \ac{jit} compilers.
-
-\subsection{The Performance of \acs{cop}}
-\label{sec:performance-cop}
 \ac{cop} as a modularity mechanism to dynamically adapt behavior at run-time has
 been demonstrated to be useful in a variety of scenarios. Beyond its original
 motivation for dynamically adapting systems based on environmental factors such
@@ -126,9 +110,24 @@ steps to construct data structures to track layer activation states at
 run-time. Both of these solutions come with considerable performance decrease
 from \SIrange{75}{99}{\percent}~\cite{appeltauer+:2009:comparison-context-oriented}.
 
+\begin{itemize}
+\item .x
+\end{itemize}
 
-\subsection{Meta-tracing Just-In-\kern-0.12emTime Compilers}
-\label{sec:meta-tracing-jit}
+% \paragraph*{Contributions}
+
+In this work, we make the following contributions and show
+\begin{itemize}
+\item that the performance overhead of sideways composition is still
+  present in most \ac{cop} implementations;
+\item that meta-tracing--based \ac{jit} compilation can reduce the
+  overhead of sideways composition; and
+\item that communicating the active layer composition \emph{explicitly} to the
+  \ac{jit} compiler can further reduce the overhead of sideways composition.
+\end{itemize}
+
+
+\section{Background: Meta-tracing \acs{jit} Compilers}
 
 \Acf{jit} compilation is one of the most used technique for speeding up the
 execution of programs at run-time. Many language implementations have yet
