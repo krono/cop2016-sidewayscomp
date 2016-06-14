@@ -1,0 +1,51 @@
+----------------------- REVIEW 3 ---------------------
+PAPER: 9
+TITLE: Optimizing Sideways Composition: Fast Context-oriented Programming in ContextPyPy
+AUTHORS: Tobias Pape, Tim Felgentreff and Robert Hirschfeld
+
+OVERALL EVALUATION: 2 (accept)
+REVIEWER'S CONFIDENCE: 4 (high)
+
+----------- Review -----------
+Context-oriented programming sometimes suffers from a performance penalty because of the overhead of method lookup.
+The paper describes a solution for alleviating this overhead by implementing a context-oriented programming language using the PyPy meta-tracing compiler.
+The just-in-time compilation facilities of PyPy enable aggressive optimisation of method lookup. Method lookup can be improved further by using the “promote” hint available in PyPy, which can be used to specialise a trace to a particular layer composition.
+Empirical results show that ContextPyPy is effective at removing the method lookup overhead both when layers have been disabled and, to a lesser extent, when they have been activated.
+
+The results shown by ContextPyPy seem very promising. A quick investigation into related work seems to suggest that ContextPyPy indeed represents one of the first implementations that use dynamic optimisations to (partially) remove the performance penalty paid by context-oriented languages.
+JIT compilation seems ideally suited to handle the issues raised in context-oriented languages. JIT compilation is already commonly used to optimise dynamic method dispatch, whose problems resemble the issues addressed in this paper.
+
+However, the paper might benefit from a better introduction to the concept of tracing, and especially meta-tracing, compilation. As it stands, I’m not sure how useful Section 2 is at explaining these compilation techniques.
+
+Furthermore, I don’t quite understand how using the “promote” hint could provide a large performance improvement to method lookup. As I understand, all partial methods that are applied in a layer composition will be inlined in the trace anyway, so I don’t see how exactly using the “promote” hint would further specialise the trace. Isn’t the trace always invalided when the layer composition changes? Even if the “promote” hint is not used?
+I can imagine that specialising the composition still offers some improvement, but I don’t think it would be as large as the paper implies.
+It would therefore be useful to provide a side-by-side comparison of two traces (one with the hint included and the other without) to make clear how this hint concretely enables additional optimisations.
+
+All in all, the results of ContextPyPy are compelling. I would be interested in seeing how the implementation of ContextPyPy can be further improved and how this technique can be transposed to other techniques depending on (variants) of sideways composition.
+
+
+Minor comments:
+- Reference 12 might better be replaced by another, more up-to-date reference. The Dynamo system, by Bala, Duesterwald and Banerjia, is commonly referenced as this system is considered to be one of the first trace-based compilers.
+
+- The code snippet in Section 4 lacks a caption and is also not referenced in the actual text.
+
+- Section 5.3 contains three paragraphs titled “Discussion”. The structure of this subsection could be improved by adding to these titles which of the three benchmark sets the paragraph describes.
+
+- It might be beneficial to reiterate in Section 5 more clearly how ContextPy running on PyPy differs from ContextPyPy.
+
+- In Section 5.3, discussion of COP 09b implies that the performance of ContextPy executed in Python is affected the least by increasing the number of activated laters because it is the only implementation that is not JIT compiled. Although this would make sense intuitively, it is hard to tell whether the differences in performance are truly statistically significant.
+
+- Page 1:
+“… execution model can allows them” -> “enables them”
+“… that telling the active layer” -> might better be replaced by “alerting/informing the JIT compiler of the active layer composition” or something to this effect
+
+- Page 2:
+“… JIT compilers is to us tracing” -> “to use tracing”
+“… recoding the steps” -> “recording the steps”
+
+- Page 3:
+“… the composition wont change” -> “won’t change”
+“… onto all partial method” -> “partial methods”
+
+- Page 5:
+“reinforces the impression of COP09a than the” -> “that the”?

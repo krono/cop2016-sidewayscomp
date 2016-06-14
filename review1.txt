@@ -1,0 +1,33 @@
+----------------------- REVIEW 1 ---------------------
+PAPER: 9
+TITLE: Optimizing Sideways Composition: Fast Context-oriented Programming in ContextPyPy
+AUTHORS: Tobias Pape, Tim Felgentreff and Robert Hirschfeld
+
+OVERALL EVALUATION: 2 (accept)
+REVIEWER'S CONFIDENCE: 3 (medium)
+
+----------- Review -----------
+Most COP implementations dynamically change the method lookup of
+the host language whose object systems apply static and single
+inheritance.  This comes with a substantial performance overhead.
+This paper discusses that meta-tracing JIT compilers can reduce
+the performance overhead.  This optimization further reduces the
+overhead if the ordering of activated layers is explicitly
+provided to the JIT compiler.  The authors implemented an extension
+of ContextPy, called ContextPyPy, with this feature of explicit
+promotion of this ordering to the JIT compiler.  A performance
+evaluation is provided, which supports this discussion.
+
+This paper is worth discussing at the workshop.  As the authors
+mentioned in the paper, the performance overhead of COP
+implementation is repeatedly recognized.  The proposed optimization
+technique seems promising and valuable for the COP community.
+The paper is well-written.  The description of performance
+evaluation is comprehensive, and the experiments are well-conducted.
+
+I would like to see more discussion about why using the
+meta-tracing JIT compiler *increase* the performance when we use
+COP layers.  I also would like to see the reason of the apparent
+performance slowdown shown in the right-most graph (ContextPyPy)
+in Figure 1, i.e., the slowdown for 4 activated layers and that
+for 7 activated layers.

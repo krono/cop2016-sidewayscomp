@@ -1,0 +1,11 @@
+----------------------- REVIEW 2 ---------------------
+PAPER: 9
+TITLE: Optimizing Sideways Composition: Fast Context-oriented Programming in ContextPyPy
+AUTHORS: Tobias Pape, Tim Felgentreff and Robert Hirschfeld
+
+OVERALL EVALUATION: 2 (accept)
+REVIEWER'S CONFIDENCE: 2 (low)
+
+----------- Review -----------
+Not being very knowledgeable in JIT / meta-tracing techniques, I have very little to say about this paper, apart from the fact that it was very clear, well written and organized, and quite easy to follow. The only grief that I have is that I would have liked more details in sections 3.2 and 4, which look like the heart of the work.
+

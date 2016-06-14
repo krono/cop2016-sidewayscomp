@@ -1,0 +1,52 @@
+----------------------- REVIEW 4 ---------------------
+PAPER: 9
+TITLE: Optimizing Sideways Composition: Fast Context-oriented Programming in ContextPyPy
+AUTHORS: Tobias Pape, Tim Felgentreff and Robert Hirschfeld
+
+OVERALL EVALUATION: 1 (weak accept)
+REVIEWER'S CONFIDENCE: 4 (high)
+
+----------- Review -----------
+Summary
+-------
+
+The paper presents a technique to optimize the lookup configurations
+stemming from different active layer compositions in COP. The
+optimization relies on VMs that allow hints to a meta-tracing JIT
+compiler to be made explicit at the language level. The authors
+propose a corresponding extension for hinting at the programming level
+and evaluate their technique in the context of the PyPy meta-tracing
+JIT compiler for Python.
+
+
+Evaluation
+----------
+
+For
+
++ The subject of the paper is highly relevant and important for COP
+ languages.
+
++ The authors provide a new technique for optimizing COP programs
+ on top of an appropriate VM and JIT compiler.
+
++ The presented benchmarks show initial results that show clear
+ potential for significant speed improvements using the presented
+ optimization technique.
+
+
+Against
+
+- The optimization technique relies on the JIT compiler exporting
+ optimization hints to the programming level, a technique that is (at
+ least not yet) available for many VMs/JITs used for COP
+ executions. At the current state, the presented technique is thus
+ specialized to the PyPy VM and JIT.
+
+- While the optimization yields significant speed-ups in some cases,
+ it does not so in all cases and cannot be used (as of yet anyway)
+ without careful planning by the programmer, see the author's second
+ discussion section in Sec. 5.3.
+
+- The optimization itself is, once a meta-tracing JIT compiler with
+ promotion at the language level is available, rather straightforward.
