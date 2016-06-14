@@ -118,11 +118,10 @@ solutions come with considerable performance decrease from
 \SIrange{75}{99}{\percent}~\cite{appeltauer+:2009:comparison-context-oriented}.
 
 We argue that \acp{vm} with meta-tracing \ac{jit} compilers can alleviate the
-performance overhead, because their execution model can allows them to optimize
-non-standard lookup. This can be achieved by explicitly telling the
-\ac{jit} complier crucial information using small ``hints'' on the side of the
-\ac{cop} implementation, avoiding a complex architecture to cache and optimize
-lookup.
+performance overhead, because their execution model allows them to optimize
+non-standard lookup. This can be achieved by explicitly telling the \ac{jit}
+complier crucial information using small ``hints'' on the side of the \ac{cop}
+implementation, avoiding a complex architecture to cache and optimize lookup.
 
 % \paragraph*{Contributions}
 
@@ -132,22 +131,23 @@ In this work, we make the following contributions and show
   present in most \ac{cop} implementations;
 \item that meta-tracing--based \ac{jit} compilation can reduce the
   overhead of sideways composition; and
-\item that telling the active layer composition \emph{explicitly} to the
+\item that announcing the active layer composition \emph{explicitly} to the
   \ac{jit} compiler can further reduce the overhead of sideways composition.
 \end{itemize}
 
 
 \section{Background: Meta-tracing \acs{jit} Compilers}
 
-\Acf{jit} compilation is one of the most used technique for speeding up the
-execution of programs at run-time. Many language implementations have yet
-benefitted from \ac{jit} compilers, including but not limited to today's
+\Acf{jit} compilation is one of the most frequently used technique for speeding
+up the execution of programs at run-time. Many language implementations have
+yet benefitted from \ac{jit} compilers, including but not limited to today's
 popular languages such as Java~\cite{paleczny+:2001:java-hotspot} or
 JavaScript~\cite{holtta:2013:crankshafting-from}. A particular implementation
-approach for \ac{jit} compilers is to us \emph{tracing}, that is, recoding the
+approach for \ac{jit} compilers is to use \emph{tracing}, that is, recording the
 steps an interpreter takes to obtain its instruction sequence, a \emph{trace}.
 This trace is subsequently used instead of the interpreter to execute the same
-part of that program~\cite{mitchell:1970:design-construction} at higher speed.
+% part of that program~\cite{mitchell:1970:design-construction} at higher speed.
+part of that program~\cite{bala+:2000:dynamo:-transparent} at higher speed.
 % Native code~\cite{bala+:2000:dynamo:-transparent} as well as object-oriented
 % programs~\cite{gal+:2006:hotpathvm:-effective} have already been optimized
 % using this technique.
@@ -253,7 +253,7 @@ functionality to the language-level and it is possible to use it for a \ac{cop}
 implementation. The composition of active layers can now be promoted and the
 meta-tracing \ac{jit} compiler now ensures that (a) a specialized traces exists
 for each encountered composition, and (b) within a given trace, the composition
-wont change and can be relied upon. This assumption now can be made when
+will not change and can be relied upon. This assumption now can be made when
 exercising lookup during execution, saving execution time.
 
 \begin{figure*}[t]
@@ -287,7 +287,7 @@ ContextPyPy.
 During development, programmers using ContextPy can annotate methods as being
 advices before/after/around their base methods in a certain layer
 (Layer-in-Class). Using Python annotations, these methods are registered to a
-\emph{descriptor} holding onto all partial method and possibly a base method.
+\emph{descriptor} holding onto all partial methods and possibly a base method.
 That way only methods that are layered at least once are affected. The
 descriptor, being a Python callable, takes the place of the named method in the
 class and, from this point on, dictates execution and effectively lookup of the
@@ -308,7 +308,8 @@ trace per layer composition, which the heuristics typically provide. However,
 with recent PyPy, we can tell this directly to the \ac{jit} compiler. Moreover,
 we are interested in the method ordering \emph{resulting} from the layer
 composition to know what method to execute next. Therefore, in ContextPyPy, the
-method ``talking'' to the \ac{jit} \emph{promotes} this ordering:
+method ``talking'' to the \ac{jit} \emph{promotes} this ordering, as presented
+in the following method:
 \begin{lstlisting}[morekeywords={promote}]
 def get_or_build_methods(self):
   if self.layer_composition_unchanged():
@@ -402,7 +403,7 @@ provided by the not measured runs.
 For \deltablue (see \autoref{sec:benchmarks}), every benchmark was run 5 times
 uninterrupted in a new process with additional 3 times warm-up prior to
 measurement for PyPy\footnote{Python did not exhibit any warm-up--related
-  differences/}. The execution time was always measured \emph{in-system} and,
+  differences}. The execution time was always measured \emph{in-system} and,
 hence, does not include start-up. We show the arithmetic mean of all runs along
 with bootstrapped~\cite{davison+:1997:confidence-intervals} confidence
 intervals for a \SI{95}{\percent} confidence level.
@@ -515,7 +516,7 @@ performance to how the meta-tracing \ac{jit} compiler handles rather long
 traces that can occur with an increasing number of active layers and which are
 yet to be investigated.
 
-\paragraph{Discussion} The meta-tracing \ac{jit} compiler of PyPy appears to be
+\paragraph{Discussion (\copa)} The meta-tracing \ac{jit} compiler of PyPy appears to be
 effective at eliminating the overhead of sideways composition. The results of
 ContextPyPy suggest that communicating layer information properly can vastly
 improve this effect, too.
@@ -529,7 +530,7 @@ ContextPy on Python \--- the only implementation/platform combination without
 \ac{jit} or \ac{jit}-like optimizations \--- exhibits the least severe impact
 with increasing layers.
 
-\paragraph{Discussion} The meta-tracing \ac{jit} compiler of PyPy seems to have
+\paragraph{Discussion (\copb)} The meta-tracing \ac{jit} compiler of PyPy seems to have
 to invalidate assumptions on layer activations, possibly not being able to
 re-use certain traces. The results of ContextPyPy suggest that the current way
 of communicating layer information to the meta-tracing \ac{jit} compiler in
@@ -561,15 +562,15 @@ of DeltaPurple, whereas on PyPy the slowdown is less than \SI{50}{\percent}
 (\(\approx 1.4\times\)). ContextPyPy performs virtually the same as ContextPy
 on PyPy.
 
-\paragraph{Discussion} \deltablue, being a less ``micro'' benchmark, reinforces
-the impression of \copa than the meta-tracing \ac{jit} compiler of PyPy is
-effective at eliminating the overhead of sideways composition. Especially the
-no-layers-activated case having no overhead seems important for wider adoption.
-Seeing \copa and \copb, the indifference between ContextPy on PyPy and
-ContextPyPy is unexpected, both the missing speedup from \copa and the missing
-slowdown from \copb. However, the slowdown of \copb is neither present for
-ContextPy on PyPy, suggesting that ContextPyPy's \emph{promote} approach could
-be nevertheless viable to use.
+\paragraph{Discussion (\deltablue)} Being a less ``micro'' benchmark,
+\deltablue reinforces the impression of \copa that the meta-tracing \ac{jit}
+compiler of PyPy is effective at eliminating the overhead of sideways
+composition. Especially the no-layers-activated case having no overhead seems
+important for wider adoption. Seeing \copa and \copb, the indifference between
+ContextPy on PyPy and ContextPyPy is unexpected, both the missing speedup from
+\copa and the missing slowdown from \copb. However, the slowdown of \copb is
+neither present for ContextPy on PyPy, suggesting that ContextPyPy's
+\emph{promote} approach could be nevertheless viable to use.
 % \subsection{Threats to Validity}
 
 % OSX: SpeedStep cannot be disabled.
@@ -638,6 +639,8 @@ LispWorks Ltd. kindly provided an evaluation license of
 LispWorks\textsuperscript{\textregistered} 64-bit for Mac OS\,X for testing
 purposes. We greatly appreciate the support of Carl Friedrich Bolz with the
 ContextPy and ContextPyPy implementations.
+
+We want to thank the anonymous reviewers for their feedback and suggestions.
 
 {\smaller\printbibliography}
 
